@@ -1,8 +1,8 @@
+import { useEffect } from 'react';
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
 import toast from 'react-hot-toast';
-import { useEffect } from 'react';
 import PageHead from '../components/PageHead';
 
 const Home: NextPage = () => {

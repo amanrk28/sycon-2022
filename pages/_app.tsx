@@ -2,6 +2,7 @@ import type { AppProps } from 'next/app';
 import { AuthProvider } from '../lib/AuthProvider';
 import { Toaster } from 'react-hot-toast';
 import '../styles/globals.css';
+import '../styles/register.scss';
 
 const toastOptions = {
   duration: 4000,

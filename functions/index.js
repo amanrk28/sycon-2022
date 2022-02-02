@@ -1,9 +1,15 @@
-const functions = require("firebase-functions");
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+admin.initializeApp();
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+function generateNumber() {
+  return Math.floor(Math.random() * 9001 + 1000);
+}
+
+exports.newUserSignup = functions.auth.user().onCreate(user => {
+  console.log('User created', user.email);
+  return admin.firestore().collections('users').doc(user.uid).set({
+    email: user.email,
+    referral_code: generateNumber(), // dummy referral code. Unique code will be generated later
+  });
+});

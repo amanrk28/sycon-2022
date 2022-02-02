@@ -5,10 +5,21 @@ module.exports = {
     node: true,
   },
   extends: [
-    "eslint:recommended",
-    "google",
+    'eslint:recommended',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:import/typescript',
+    'google',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:prettier/recommended',
   ],
+  ignorePatterns: [
+    '/lib/**/*', // Ignore built files.
+    '.eslintrc.js',
+    'scripts/**/',
+  ],
+  plugins: ['import'],
   rules: {
-    quotes: ["error", "double"],
+    quotes: ['error', 'single'],
   },
 };
