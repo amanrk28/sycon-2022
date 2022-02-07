@@ -1,0 +1,17 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img {
+    margin: 24px 0;
+  }
+  .input-container {
+    margin: 6px 0;
+  }
+  p {
+    span {
+      color: #1876d1;
+      cursor: pointer;
+    }
+  }
+}

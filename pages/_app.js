@@ -1,8 +1,8 @@
-import type { AppProps } from 'next/app';
-import { AuthProvider } from '../lib/AuthProvider';
+import { AuthProvider } from 'lib/AuthProvider';
 import { Toaster } from 'react-hot-toast';
-import '../styles/globals.css';
-import '../styles/register.scss';
+import 'styles/globals.css';
+import 'styles/register.scss';
+import 'styles/auth.scss';
 
 const toastOptions = {
   duration: 4000,
@@ -12,7 +12,7 @@ const toastOptions = {
   },
 };
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }) {
   return (
     <AuthProvider>
       <Component {...pageProps} />

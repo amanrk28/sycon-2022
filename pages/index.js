@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
-import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
 import Image from 'next/image';
-import styles from '../styles/Home.module.css';
 import toast from 'react-hot-toast';
-import PageHead from '../components/PageHead';
+import styles from 'styles/Home.module.css';
+import PageHead from 'components/PageHead';
 
-const Home: NextPage = () => {
+const Home = () => {
   // Toast test
+  const router = useRouter();
   useEffect(() => {
     toast.success('Successfully Toasted');
+    router.push('/register');
   }, []);
 
   return (

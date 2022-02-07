@@ -3,8 +3,8 @@ const inputFields = [
   { id: 'email', label: 'College Email ID', type: 'email', props: {} },
   { id: 'registerNumber', label: 'Register Number', type: 'text', props: {} },
   {
-    id: 'contact',
-    label: 'Contact Number',
+    id: 'phone',
+    label: 'Phone Number',
     type: 'text',
     props: { maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' },
   },
@@ -19,11 +19,12 @@ const inputFields = [
 const branchNames = [
   'CSE',
   'IT',
-  'EEE',
   'ECE',
-  'Chemical',
-  'BME',
+  'EEE',
   'Mechanical',
+  'BME',
+  'Civil',
+  'Chemical',
 ];
 
 const degreeNames = ['B.Tech', 'B.E.'];
