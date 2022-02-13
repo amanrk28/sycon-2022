@@ -11,7 +11,7 @@ const Home = () => {
   useEffect(() => {
     toast.success('Successfully Toasted');
     router.push('/register');
-  }, []);
+  });
 
   return (
     <div className={styles.container}>

@@ -1,5 +1,5 @@
-import { AuthProvider } from 'lib/AuthProvider';
 import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from 'lib/AuthProvider';
 import 'styles/globals.css';
 import 'styles/register.scss';
 import 'styles/auth.scss';

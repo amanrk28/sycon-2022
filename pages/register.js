@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import axios from 'axios';
-import { loadStripe } from '@stripe/stripe-js';
 import Stripe from 'stripe';
+import { loadStripe } from '@stripe/stripe-js';
+import toast from 'react-hot-toast';
 import { TextField, Menu, MenuItem, Button } from '@mui/material';
 import { inputFields, branchNames, degreeNames } from 'constants/register';
 import PageHead from 'components/PageHead';
 import { sanitizeData } from 'utils/util';
+import { setLs, lsKeys } from 'utils/lsUtil';
 
 const textFieldSx = { width: 400 };
 
@@ -13,6 +16,10 @@ const dropdowns = [
   { id: 'degree', label: 'Degree', list: degreeNames, open: 'openDegree' },
   { id: 'branch', label: 'Branch', list: branchNames, open: 'openBranch' },
 ];
+
+function generate4DigitNumber() {
+  return Math.floor(Math.random() * 10000) + 1;
+}
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
@@ -26,6 +33,16 @@ export default function Register({ prices }) {
     degree: '',
     branch: '',
     referralCode: '',
+  });
+  const [error, setError] = useState({
+    fullName: false,
+    email: false,
+    registerNumber: false,
+    phone: false,
+    year: false,
+    degree: false,
+    branch: false,
+    referralCode: false,
   });
   const [anchorElDegree, setAnchorElDegree] = useState(null);
   const [anchorElBranch, setAnchorElBranch] = useState(null);
@@ -50,20 +67,39 @@ export default function Register({ prices }) {
     setPayloadData({ ...payloadData, [key]: value });
   };
 
-  const onSubmit = async event => {
+  const onSubmit = async (event, paymentMode) => {
     event.preventDefault();
     const { data, errors } = sanitizeData(payloadData);
-    console.log(data, errors);
-    // const res = await axios({
-    //   baseURL: window.location.origin,
-    //   method: 'POST',
-    //   url: '/api/checkout_session',
-    //   data: {
-    //     priceId: prices[0].id,
-    //     email: data.email || '',
-    //   },
-    // });
-    // window.location = res.data.url;
+    setError(errors);
+    if (Object.values(errors).includes(true)) {
+      toast.error('Fill all fields to continue');
+      return;
+    } else {
+      setPayloadData(data);
+      const username =
+        data.fullName.substring(0, 15).toLowerCase().replace(/\s/g, '_') +
+        generate4DigitNumber();
+      setLs(lsKeys.firebaseRegUserRef, username);
+      await axios({
+        baseURL: window.location.origin,
+        method: 'POST',
+        url: '/api/registration',
+        data: { ...data, username, hasPaidOnline: false },
+      });
+    }
+    if (paymentMode === 'online-payment') {
+      // Launch stripe checkout session
+      const res = await axios({
+        baseURL: window.location.origin,
+        method: 'POST',
+        url: '/api/checkout_session',
+        data: {
+          priceId: prices[0].id,
+          email: data.email || '',
+        },
+      });
+      window.location = res.data.url;
+    }
   };
 
   return (
@@ -75,7 +111,7 @@ export default function Register({ prices }) {
 
       <div className="register-container">
         <div className="cover-container">
-          <img src="/logo.svg" alt="SYCon" />
+          <Image src="/logo.svg" alt="SYCon" width={127} height={53} />
           <h1>SYCon</h1>
           <p>Creating leaders and inspiring change</p>
         </div>
@@ -91,6 +127,8 @@ export default function Register({ prices }) {
                   label={field.label}
                   onChange={e => onChange(e, field.id)}
                   inputProps={field.props}
+                  error={error[field.id]}
+                  required
                 />
               </div>
             ))}
@@ -99,7 +137,6 @@ export default function Register({ prices }) {
               {dropdowns.map(dd => (
                 <div className="input-container" key={dd.id}>
                   <TextField
-                    disabled
                     value={payloadData[dd.id]}
                     label={dd.label}
                     id={`${dd.id}-button`}
@@ -109,6 +146,9 @@ export default function Register({ prices }) {
                     }
                     aria-haspopup="true"
                     aria-expanded={openVar[dd.open] ? 'true' : undefined}
+                    disabled={!error[dd.id]}
+                    error={error[dd.id]}
+                    required
                   />
                   <Menu
                     id={`${dd.id}-menu`}
@@ -143,6 +183,8 @@ export default function Register({ prices }) {
                   pattern: '[0-9]*',
                   maxLength: 4,
                 }}
+                error={error.referralCode}
+                required
               />
             </div>
           </div>
@@ -151,11 +193,18 @@ export default function Register({ prices }) {
               variant="contained"
               size="large"
               sx={{ width: 180 }}
-              onClick={onSubmit}
+              color="info"
+              onClick={e => onSubmit(e, 'online-payment')}
             >
               Pay Now
             </Button>
-            <Button variant="outlined" size="large" sx={{ width: 180 }}>
+            <Button
+              variant="outlined"
+              size="large"
+              sx={{ width: 180 }}
+              color="info"
+              onClick={e => onSubmit(e, 'offline-payment')}
+            >
               Pay Later
             </Button>
           </div>
@@ -164,3 +213,13 @@ export default function Register({ prices }) {
     </>
   );
 }
+
+export const getServerSideProps = async () => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2020-08-27',
+  });
+  const prices = await stripe.prices.list({
+    active: true,
+  });
+  return { props: { prices: prices.data } };
+};
