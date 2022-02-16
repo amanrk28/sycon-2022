@@ -1,6 +1,6 @@
 import { firestore } from 'lib/firebase';
 import { cors } from 'lib/middleware';
-import { doc, writeBatch } from 'firebase/firestore';
+import { doc, getDoc, writeBatch } from 'firebase/firestore';
 
 export default async function handler(req, res) {
   await cors(req, res);
@@ -54,10 +54,8 @@ export default async function handler(req, res) {
     const { uid } = req.query;
     const userRef = doc(firestore, 'users', uid);
     try {
-      const userData = (await userRef.get()).data();
-      userData['updatedAt'] = userData['updatedAt'].seconds;
+      const userData = (await getDoc(userRef)).data();
       res.status(200).send({ ...userData });
-      //res.status(200).send(userData);
     } catch (err) {
       res.status(404).send({
         message: 'Not found',

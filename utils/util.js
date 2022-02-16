@@ -12,8 +12,8 @@ export const sanitizeData = data => {
   // Validate Full Name
   if (data.fullName) {
     let x = data.fullName.split(' ');
-    x = x.map(item => item.toUpperCase());
-    data.fullName = x.toString();
+    x = x.map(item => item[0].toUpperCase() + item.substr(1));
+    data.fullName = x.join(' ');
   } else errors.fullName = true;
   // Validate email
   if (data.email) {
@@ -41,6 +41,7 @@ export const sanitizeData = data => {
   if (data.referralCode) {
     const x = parseInt(data.referralCode, 10);
     errors.referralCode = !(Number.isInteger(x) && x >= 1000 && x <= 9999);
+    data.referralCode = x;
   } else errors.referralCode = true;
 
   return { data, errors };

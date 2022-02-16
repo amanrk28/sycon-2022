@@ -1,6 +1,15 @@
 import { firestore } from 'lib/firebase';
 import { cors } from 'lib/middleware';
-import { doc, writeBatch } from 'firebase/firestore';
+import {
+  doc,
+  serverTimestamp,
+  writeBatch,
+  getDoc,
+  query,
+  collection,
+  getDocs,
+  where,
+} from 'firebase/firestore';
 
 export default async function handler(req, res) {
   await cors(req, res);
@@ -16,7 +25,7 @@ export default async function handler(req, res) {
       branch,
       referralCode,
       username,
-      hasPaidOnline,
+      hasPaid,
     } = req.body;
 
     const registrationDoc = doc(firestore, 'registrations', username);
@@ -25,15 +34,16 @@ export default async function handler(req, res) {
 
     try {
       batch.set(registrationDoc, {
-        email: email,
-        fullName: fullName,
-        registerNumber: registerNumber,
-        year: year,
-        degree: degree,
-        branch: branch,
-        phone: phone,
+        email,
+        fullName,
+        registerNumber,
+        year,
+        degree,
+        branch,
+        phone,
+        hasPaid,
         referral_code: referralCode,
-        hasPaidOnline: hasPaidOnline,
+        updatedAt: serverTimestamp(),
       });
     } catch (err) {
       res.status(400).send({
@@ -59,30 +69,48 @@ export default async function handler(req, res) {
   }
 
   if (req.method == 'PUT') {
-    const { username, hasPaidOnline, customer } = req.body;
+    const { username, hasPaid, customer, referralCode, link } = req.body;
     const registrationDoc = doc(firestore, 'registrations', username);
     const paymentDoc = doc(firestore, 'payments', username);
+    const usersQuery = query(
+      collection(firestore, 'users'),
+      where('referral_code', '==', parseInt(referralCode, 10))
+    );
     const batch = writeBatch(firestore);
     try {
       batch.update(registrationDoc, {
-        hasPaidOnline: hasPaidOnline,
-        customer: customer, //to be updated later
+        referral_code: parseInt(referralCode, 10),
+        hasPaid,
+        customer: customer.id,
+        link,
+        updatedAt: serverTimestamp(),
       });
       batch.set(paymentDoc, {
-        customer: customer, // to be updated later
+        customer: customer.id,
+        updatedAt: serverTimestamp(),
+      });
+      const usersQuerySnap = await getDocs(usersQuery);
+      usersQuerySnap.forEach(docu => {
+        if (docu.data()) {
+          const userDoc = doc(firestore, 'users', docu.id);
+          let registrations = 1;
+          if (docu.data().registrations)
+            registrations = docu.data().registrations + 1;
+          batch.update(userDoc, { registrations });
+        }
       });
     } catch (err) {
       res.status(400).send({
         message: 'Bad Request',
-        error: 'One or more body parameters are missing',
+        error: `One or more body parameters are missing ${err}`,
       });
       return;
     }
+
     try {
       await batch.commit();
       res.status(200).send({
         message: 'Registration updated successfull',
-        fullName,
       });
     } catch (err) {
       res.status(500).send({
@@ -95,9 +123,9 @@ export default async function handler(req, res) {
 
   if (req.method == 'GET') {
     const { username } = req.query;
-    const registrationRef = doc(firestore, 'registration', username);
+    const registrationRef = doc(firestore, 'registrations', username);
     try {
-      const registrationData = (await registrationRef.get()).data();
+      const registrationData = (await getDoc(registrationRef)).data();
       registrationData['updatedAt'] = registrationData['updatedAt'].seconds;
       res.status(200).send({ ...registrationData });
       //res.status(200).send(registrationData);

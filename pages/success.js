@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Box } from '@mui/material';
-import { getLs, lsKeys } from 'utils/lsUtil';
+import Box from '@mui/material/Box';
+import { getLs, lsKeys, removeLs } from 'utils/lsUtil';
 
 const ContainerBoxSx = {
   display: 'flex',
@@ -22,21 +22,32 @@ const WrapperboxSx = {
   width: 500,
 };
 
-export default function Success({ customer }) {
+export default function Success({ customer, link }) {
   const router = useRouter();
   useEffect(() => {
     if (!router.query?.session_id && !customer) {
       router.push('/register');
     } else {
       const username = getLs(lsKeys.firebaseRegUserRef);
-      axios({
-        baseURL: window.location.origin,
-        method: 'PUT',
-        url: '/api/registration',
-        data: { username, hasPadiOnline: true, customer },
-      });
+      const referralCode = getLs(lsKeys.refCode);
+      if (username && referralCode) {
+        axios({
+          baseURL: window.location.origin,
+          method: 'PUT',
+          url: '/api/registration',
+          data: {
+            username,
+            hasPaid: true,
+            customer,
+            link,
+            referralCode,
+          },
+        });
+        removeLs(lsKeys.refCode);
+        removeLs(lsKeys.firebaseRegUserRef);
+      }
     }
-  }, [router, customer]);
+  }, [router, customer, link]);
   return (
     <Box sx={ContainerBoxSx}>
       <Box sx={WrapperboxSx}>
@@ -53,9 +64,13 @@ export default function Success({ customer }) {
 }
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
 export const getServerSideProps = async ctx => {
   const session = await stripe.checkout.sessions.retrieve(ctx.query.session_id);
-  const customer = await stripe.customers.retrieve(session.customer);
-  return { props: { customer: customer } };
+  const dashboardLink = `${process.env.STRIPE_DASHBOARD_LINK}/${session.payment_intent}`;
+  return {
+    props: {
+      customer: { id: session.customer, email: session.customer_details.email },
+      link: dashboardLink,
+    },
+  };
 };

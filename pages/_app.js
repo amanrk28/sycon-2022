@@ -3,6 +3,7 @@ import { AuthProvider } from 'lib/AuthProvider';
 import 'styles/globals.css';
 import 'styles/register.scss';
 import 'styles/auth.scss';
+import 'styles/members.scss';
 
 const toastOptions = {
   duration: 4000,

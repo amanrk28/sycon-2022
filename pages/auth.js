@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import { Button, Box, TextField } from '@mui/material';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 import toast from 'react-hot-toast';
 import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from 'lib/AuthProvider';
@@ -21,18 +23,22 @@ const BoxSx = {
   alignItems: 'center',
   borderRadius: 2,
   background: 'white',
+  boxShadow:
+    'rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px',
+};
+const LogoBoxSx = {
+  my: 4,
 };
 
 export default function Auth() {
   const [isSignup, setIsSignup] = useState(false);
   const [authType, setAuthType] = useState(loginFields);
   const [state, setState] = useState(loginPayload);
-  const { login, signup, addUserDetail, currentUser } = useAuth();
-
   const router = useRouter();
-  // useEffect(() => {
-  //   if (currentUser) router.push('/register');
-  // }, [currentUser, router]);
+  const { login, signup, addUserDetail, currentUser } = useAuth();
+  useEffect(() => {
+    if (currentUser) redirectUser(currentUser.uid);
+  }, [redirectUser, currentUser]);
 
   const toggleAuth = () => {
     setIsSignup(prevState => {
@@ -51,6 +57,19 @@ export default function Auth() {
     setState({ ...state, [key]: e.target.value });
   };
 
+  const redirectUser = useCallback(
+    uid => {
+      axios({
+        baseUrl: window.location.origin,
+        method: 'GET',
+        url: `/api/user?uid=${uid}`,
+      }).then(res => {
+        router.push(`/members?code=${res.data.referral_code}`);
+      });
+    },
+    [router]
+  );
+
   const signupUser = async () => {
     if (!state.password.length > 0 || !state.confirmPassword.length > 0) {
       toast.error('Passwords not entered');
@@ -60,27 +79,29 @@ export default function Auth() {
       toast.error('Passwords do not match');
       return;
     }
-    const { user: currentUser } = await signup(state.email, state.password);
-    if (currentUser) {
-      await sendEmailVerification(currentUser);
+    const { user } = await signup(state.email, state.password);
+    if (user) {
+      await sendEmailVerification(user);
       toast.success('Verification email sent!');
-      await addUserDetail(currentUser, state.full_name);
+      await addUserDetail(user, state.full_name);
       axios({
         baseURL: window.location.origin,
         method: 'POST',
         url: '/api/user',
         data: {
-          uid: currentUser.uid,
+          uid: user.uid,
           email: state['email'],
           fullName: state['full_name'],
           phone: state['phone_number'],
           registerNumber: state['reg_no'],
           year: state['year'],
           department: state['department'],
+          registrations: 0,
         },
       })
         .then(() => {
           toast.success('Sign up successful!');
+          redirectUser(user.uid);
         })
         .catch(() => {
           toast.error('Unable to post data');
@@ -92,9 +113,12 @@ export default function Auth() {
     let toastId;
     try {
       toastId = toast.loading('Signing in..');
-      await login(state.email, state.password);
+      const { user } = await login(state.email, state.password);
       toast.dismiss(toastId);
       toast.success('Success!');
+      if (user) {
+        redirectUser(user.uid);
+      }
     } catch (err) {
       if (err.code === 'auth/user-not-found') {
         toast.error('Email not found! Did you mean to sign up?');
@@ -122,9 +146,9 @@ export default function Auth() {
   return (
     <div className="auth-container">
       <Box sx={BoxSx}>
-        <div className="logo-container">
+        <Box sx={LogoBoxSx}>
           <Image src="/logo.svg" alt="SYCon" width={127} height={53} />
-        </div>
+        </Box>
         {authType.map(item => (
           <div className="input-container" key={item.id}>
             <TextField

@@ -4,7 +4,10 @@ import axios from 'axios';
 import Stripe from 'stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import toast from 'react-hot-toast';
-import { TextField, Menu, MenuItem, Button } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
 import { inputFields, branchNames, degreeNames } from 'constants/register';
 import PageHead from 'components/PageHead';
 import { sanitizeData } from 'utils/util';
@@ -80,11 +83,12 @@ export default function Register({ prices }) {
         data.fullName.substring(0, 15).toLowerCase().replace(/\s/g, '_') +
         generate4DigitNumber();
       setLs(lsKeys.firebaseRegUserRef, username);
+      setLs(lsKeys.refCode, data.referralCode);
       await axios({
         baseURL: window.location.origin,
         method: 'POST',
         url: '/api/registration',
-        data: { ...data, username, hasPaidOnline: false },
+        data: { ...data, username, hasPaid: false },
       });
     }
     if (paymentMode === 'online-payment') {
