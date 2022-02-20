@@ -70,19 +70,20 @@ export default async function handler(req, res) {
 
   if (req.method == 'PUT') {
     const { username, hasPaid, customer, referralCode, link } = req.body;
+    const parsedRC = parseInt(referralCode, 10);
     const registrationDoc = doc(firestore, 'registrations', username);
     const paymentDoc = doc(firestore, 'payments', username);
     const usersQuery = query(
       collection(firestore, 'users'),
-      where('referral_code', '==', parseInt(referralCode, 10))
+      where('referral_code', '==', parsedRC)
     );
     const batch = writeBatch(firestore);
     try {
       batch.update(registrationDoc, {
-        referral_code: parseInt(referralCode, 10),
+        referral_code: parsedRC,
         hasPaid,
         customer: customer.id,
-        link,
+        paymentLink: link,
         updatedAt: serverTimestamp(),
       });
       batch.set(paymentDoc, {

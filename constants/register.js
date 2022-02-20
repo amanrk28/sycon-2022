@@ -14,6 +14,15 @@ const inputFields = [
     type: 'text',
     props: { maxLength: 1, inputMode: 'numeric', pattern: '[0-9]*' },
   },
+  {
+    id: 'dropdown-inputs',
+  },
+  {
+    id: 'referralCode',
+    label: 'Referral Code',
+    type: 'text',
+    props: { maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' },
+  },
 ];
 
 const branchNames = [
@@ -28,5 +37,6 @@ const branchNames = [
 ];
 
 const degreeNames = ['B.Tech', 'B.E.'];
+const collegeNames = ['SSN', 'SNU'];
 
-export { inputFields, branchNames, degreeNames };
+export { inputFields, branchNames, degreeNames, collegeNames };

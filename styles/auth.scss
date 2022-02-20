@@ -7,6 +7,20 @@
   min-height: 100vh;
   min-width: 100vw;
   background-image: linear-gradient(to right, #a855f7, #d946ef);
+  .auth-wrapper {
+    padding: 32px;
+    margin: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 8px;
+    background: white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
+      rgba(0, 0, 0, 0.3) 0px 30px 60px -30px;
+    .logo-container {
+      margin: 32px 0;
+    }
+  }
   .input-container {
     margin: 6px 0;
   }

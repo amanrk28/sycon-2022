@@ -1,6 +1,6 @@
 import { firestore } from 'lib/firebase';
 import { cors } from 'lib/middleware';
-import { doc, getDoc, writeBatch } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export default async function handler(req, res) {
   await cors(req, res);
@@ -15,10 +15,8 @@ export default async function handler(req, res) {
 
     const userDoc = doc(firestore, 'users', uid);
 
-    const batch = writeBatch(firestore);
-
     try {
-      batch.set(userDoc, {
+      await setDoc(userDoc, {
         email: email,
         fullName: fullName,
         registerNumber: registerNumber,
@@ -27,24 +25,14 @@ export default async function handler(req, res) {
         phone: phone,
         referral_code: generateNumber(),
       });
-    } catch (err) {
-      res.status(400).send({
-        message: 'Bad request',
-        error: 'One or more body parameters are missing',
-      });
-      return;
-    }
-
-    try {
-      await batch.commit();
       res.status(200).send({
         message: 'User created successfully',
         fullName,
       });
     } catch (err) {
-      res.status(500).send({
-        message: 'Server error',
-        error: err.toString(),
+      res.status(400).send({
+        message: 'Bad request',
+        error: `One or more body parameters are missing ${err}`,
       });
       return;
     }

@@ -5,10 +5,10 @@ import CustomTable from 'components/Table';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { firestore } from 'lib/firebase';
 import { useAuth } from 'lib/AuthProvider';
-import { referralColumns, lbColumns, amountSummary } from 'constants/members';
+import { referralColumns, lbColumns, amountSummary } from 'constants/dashboard';
 import Tooltip from '@mui/material/Tooltip';
 
-export default function MembersDashboard({
+export default function Dashboard({
   amountCollected,
   referrals,
   leaderboard,
@@ -18,7 +18,7 @@ export default function MembersDashboard({
   const { currentUser, logout } = useAuth();
   const router = useRouter();
   useEffect(() => {
-    if (!currentUser) router.push('/auth');
+    if (!currentUser || !router.query?.code) router.push('/auth');
   }, [currentUser, router]);
   return (
     <div className="organizer-container">
@@ -67,12 +67,17 @@ export default function MembersDashboard({
   );
 }
 
-export const getServerSideProps = async ctx => {
-  if (!ctx.query.code) return { props: {} };
+export const getServerSideProps = async ({ res, query: ctxQuery }) => {
+  if (!ctxQuery.code) {
+    res.statusCode = 302;
+    res.setHeader('Location', '/auth');
+    return { props: {} };
+  }
+  const referralCode = parseInt(ctxQuery.code, 10);
   const regQuerySnapshot = await getDocs(
     query(
       collection(firestore, 'registrations'),
-      where('referral_code', '==', parseInt(ctx.query.code, 10))
+      where('referral_code', '==', referralCode)
     )
   );
   let amountCollected = { cash: 0, online: 0 };
@@ -85,6 +90,7 @@ export const getServerSideProps = async ctx => {
         year: data.year,
         branch: data.branch,
         paymentMode: data.hasPaid ? 'Online' : 'Cash',
+        key: data.email,
       });
       if (data.hasPaid) {
         amountCollected.online += 100;
@@ -93,10 +99,9 @@ export const getServerSideProps = async ctx => {
       }
     }
   });
-  let leaderboard = [];
-  let referralSize = 0;
-  let highlighted = 0;
-  const referralCode = parseInt(ctx.query.code, 10);
+  let leaderboard = [],
+    referralSize = 0,
+    highlighted = 0;
   const usersQuerySnapshot = await getDocs(
     query(collection(firestore, 'users'), orderBy('registrations', 'desc'))
   );
@@ -112,6 +117,7 @@ export const getServerSideProps = async ctx => {
       department: data.department,
       registrations: data.registrations,
       position: leaderboard.length + 1,
+      key: data.email,
     });
   });
   return {

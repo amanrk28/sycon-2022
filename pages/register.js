@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import axios from 'axios';
 import Stripe from 'stripe';
 import { loadStripe } from '@stripe/stripe-js';
 import toast from 'react-hot-toast';
 import TextField from '@mui/material/TextField';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
-import { inputFields, branchNames, degreeNames } from 'constants/register';
+import {
+  inputFields,
+  branchNames,
+  degreeNames,
+  collegeNames,
+} from 'constants/register';
 import PageHead from 'components/PageHead';
+import Dropdown from 'components/dropdown';
 import { sanitizeData } from 'utils/util';
 import { setLs, lsKeys } from 'utils/lsUtil';
 
 const textFieldSx = { width: 400 };
 
 const dropdowns = [
+  { id: 'college', label: 'College', list: collegeNames, open: 'openCollege' },
   { id: 'degree', label: 'Degree', list: degreeNames, open: 'openDegree' },
   { id: 'branch', label: 'Branch', list: branchNames, open: 'openBranch' },
 ];
@@ -27,12 +33,14 @@ function generate4DigitNumber() {
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
 
 export default function Register({ prices }) {
+  const router = useRouter();
   const [payloadData, setPayloadData] = useState({
     fullName: '',
     email: '',
     registerNumber: '',
     phone: '',
     year: '',
+    college: '',
     degree: '',
     branch: '',
     referralCode: '',
@@ -43,18 +51,22 @@ export default function Register({ prices }) {
     registerNumber: false,
     phone: false,
     year: false,
+    college: false,
     degree: false,
     branch: false,
     referralCode: false,
   });
   const [anchorElDegree, setAnchorElDegree] = useState(null);
   const [anchorElBranch, setAnchorElBranch] = useState(null);
+  const [anchorElCollege, setAnchorElCollege] = useState(null);
   const openVar = {
     openDegree: Boolean(anchorElDegree),
     openBranch: Boolean(anchorElBranch),
+    openCollege: Boolean(anchorElCollege),
   };
   const handleClick = (event, id) => {
     if (id === 'degree') setAnchorElDegree(event.currentTarget);
+    else if (id === 'college') setAnchorElCollege(event.currentTarget);
     else setAnchorElBranch(event.currentTarget);
   };
 
@@ -62,6 +74,7 @@ export default function Register({ prices }) {
     const value = e.target.getAttribute('name');
     if (value) setPayloadData({ ...payloadData, [id]: value });
     if (id === 'degree') setAnchorElDegree(null);
+    else if (id === 'college') setAnchorElCollege(null);
     else setAnchorElBranch(null);
   };
 
@@ -103,6 +116,8 @@ export default function Register({ prices }) {
         },
       });
       window.location = res.data.url;
+    } else {
+      router.push('/registration_success');
     }
   };
 
@@ -122,75 +137,46 @@ export default function Register({ prices }) {
         <div className="register-form">
           <h3>Student Registration</h3>
           <div className="input-fields">
-            {inputFields.map(field => (
-              <div className="input-container" key={field.id}>
-                <TextField
-                  sx={textFieldSx}
-                  value={payloadData[field.id]}
-                  type={field.type}
-                  label={field.label}
-                  onChange={e => onChange(e, field.id)}
-                  inputProps={field.props}
-                  error={error[field.id]}
-                  required
-                />
-              </div>
-            ))}
-
-            <div className="dropdown-input">
-              {dropdowns.map(dd => (
-                <div className="input-container" key={dd.id}>
+            {inputFields.map(field => {
+              return field.id === 'dropdown-inputs' ? (
+                <div className="dropdown-input">
+                  {dropdowns.map(dd => (
+                    <div className="input-container" key={dd.id}>
+                      <Dropdown
+                        id={dd.id}
+                        value={payloadData[dd.id]}
+                        label={dd.label}
+                        open={openVar[dd.open]}
+                        handleClick={handleClick}
+                        handleClose={handleClose}
+                        anchor={
+                          dd.id === 'degree'
+                            ? anchorElDegree
+                            : dd.id === 'college'
+                            ? anchorElCollege
+                            : anchorElBranch
+                        }
+                        error={error[dd.id]}
+                        list={dd.list}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="input-container" key={field.id}>
                   <TextField
-                    value={payloadData[dd.id]}
-                    label={dd.label}
-                    id={`${dd.id}-button`}
-                    onClick={e => handleClick(e, dd.id)}
-                    aria-controls={
-                      openVar[dd.open] ? `${dd.id}-menu` : undefined
-                    }
-                    aria-haspopup="true"
-                    aria-expanded={openVar[dd.open] ? 'true' : undefined}
-                    disabled={!error[dd.id]}
-                    error={error[dd.id]}
+                    sx={textFieldSx}
+                    value={payloadData[field.id]}
+                    type={field.type}
+                    label={field.label}
+                    onChange={e => onChange(e, field.id)}
+                    inputProps={field.props}
+                    error={error[field.id]}
                     required
                   />
-                  <Menu
-                    id={`${dd.id}-menu`}
-                    anchorEl={
-                      dd.id === 'degree' ? anchorElDegree : anchorElBranch
-                    }
-                    open={openVar[dd.open]}
-                    onClose={e => handleClose(e, dd.id)}
-                    MenuListProps={{ 'aria-labelledby': 'degree-button' }}
-                  >
-                    {dd.list.map(item => (
-                      <MenuItem
-                        onClick={e => handleClose(e, dd.id)}
-                        name={item}
-                        key={item}
-                      >
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </Menu>
                 </div>
-              ))}
-            </div>
-            <div className="input-container">
-              <TextField
-                sx={textFieldSx}
-                value={payloadData.referralCode}
-                label="Referral Code"
-                onChange={e => onChange(e, 'referralCode')}
-                inputProps={{
-                  inputMode: 'numeric',
-                  pattern: '[0-9]*',
-                  maxLength: 4,
-                }}
-                error={error.referralCode}
-                required
-              />
-            </div>
+              );
+            })}
           </div>
           <div className="payment-container">
             <Button

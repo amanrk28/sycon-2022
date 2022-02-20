@@ -60,9 +60,9 @@ export default function CustomTable({
           <TableBody>
             {rows.map((row, rowIdx) => (
               <StyledTableRow
+                key={row.key}
                 role="checkbox"
                 tabIndex={-1}
-                key={row.code}
                 highlighted={rowIdx === highlighted ? 'true' : undefined}
               >
                 {columns.map(column => {

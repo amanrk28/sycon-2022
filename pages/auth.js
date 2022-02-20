@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import toast from 'react-hot-toast';
 import { sendEmailVerification } from 'firebase/auth';
@@ -15,24 +14,9 @@ import {
   signupPayload,
 } from 'constants/auth';
 
-const BoxSx = {
-  p: 4,
-  m: 10,
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  borderRadius: 2,
-  background: 'white',
-  boxShadow:
-    'rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px',
-};
-const LogoBoxSx = {
-  my: 4,
-};
-
 export default function Auth() {
   const [isSignup, setIsSignup] = useState(false);
-  const [authType, setAuthType] = useState(loginFields);
+  const [authFields, setAuthFields] = useState(loginFields);
   const [state, setState] = useState(loginPayload);
   const router = useRouter();
   const { login, signup, addUserDetail, currentUser } = useAuth();
@@ -43,10 +27,10 @@ export default function Auth() {
   const toggleAuth = () => {
     setIsSignup(prevState => {
       if (prevState) {
-        setAuthType(loginFields);
+        setAuthFields(loginFields);
         setState(loginPayload);
       } else {
-        setAuthType(signupFields);
+        setAuthFields(signupFields);
         setState(signupPayload);
       }
       return !prevState;
@@ -64,7 +48,7 @@ export default function Auth() {
         method: 'GET',
         url: `/api/user?uid=${uid}`,
       }).then(res => {
-        router.push(`/members?code=${res.data.referral_code}`);
+        router.push(`/dashboard?code=${res.data.referral_code}`);
       });
     },
     [router]
@@ -96,7 +80,7 @@ export default function Auth() {
           registerNumber: state['reg_no'],
           year: state['year'],
           department: state['department'],
-          registrations: 0,
+          registrations: 0, // default value for new oc member
         },
       })
         .then(() => {
@@ -112,13 +96,11 @@ export default function Auth() {
   const loginUser = async () => {
     let toastId;
     try {
-      toastId = toast.loading('Signing in..');
+      toastId = toast.loading('Signing in...');
       const { user } = await login(state.email, state.password);
       toast.dismiss(toastId);
-      toast.success('Success!');
-      if (user) {
-        redirectUser(user.uid);
-      }
+      toast.success('Welcome Back!');
+      if (user) redirectUser(user.uid);
     } catch (err) {
       if (err.code === 'auth/user-not-found') {
         toast.error('Email not found! Did you mean to sign up?');
@@ -145,11 +127,11 @@ export default function Auth() {
 
   return (
     <div className="auth-container">
-      <Box sx={BoxSx}>
-        <Box sx={LogoBoxSx}>
+      <div className="auth-wrapper">
+        <div className="logo-container">
           <Image src="/logo.svg" alt="SYCon" width={127} height={53} />
-        </Box>
-        {authType.map(item => (
+        </div>
+        {authFields.map(item => (
           <div className="input-container" key={item.id}>
             <TextField
               sx={{ width: 300 }}
@@ -175,7 +157,7 @@ export default function Auth() {
           &nbsp;
           <span onClick={toggleAuth}>{isSignup ? 'Login' : 'Signup'}</span>
         </p>
-      </Box>
+      </div>
     </div>
   );
 }

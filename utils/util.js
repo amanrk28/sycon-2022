@@ -1,3 +1,10 @@
+const emailValidation = emailString => {
+  return String(emailString)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
 export const sanitizeData = data => {
   let errors = {
     fullName: false,
@@ -17,12 +24,7 @@ export const sanitizeData = data => {
   } else errors.fullName = true;
   // Validate email
   if (data.email) {
-    const test = String(data.email)
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-      );
-    errors.email = !test;
+    errors.email = !emailValidation(data.email);
   } else errors.email = true;
   // Validate phone
   if (data.phone) {
@@ -37,6 +39,7 @@ export const sanitizeData = data => {
 
   if (!data.branch) errors.branch = true;
   if (!data.degree) errors.degree = true;
+  if (!data.college) errors.college = true;
   if (!data.registerNumber) errors.registerNumber = true;
   if (data.referralCode) {
     const x = parseInt(data.referralCode, 10);
