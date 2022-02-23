@@ -7,16 +7,11 @@ import TextField from '@mui/material/TextField';
 import toast from 'react-hot-toast';
 import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from 'lib/AuthProvider';
-import {
-  loginFields,
-  loginPayload,
-  signupFields,
-  signupPayload,
-} from 'constants/auth';
+import { loginPayload, signupPayload, authFields } from 'constants/auth';
+import PageHead from 'components/PageHead';
 
 export default function Auth() {
-  const [isSignup, setIsSignup] = useState(false);
-  const [authFields, setAuthFields] = useState(loginFields);
+  const [authType, setAuthType] = useState('login');
   const [state, setState] = useState(loginPayload);
   const router = useRouter();
   const { login, signup, addUserDetail, currentUser } = useAuth();
@@ -25,15 +20,13 @@ export default function Auth() {
   }, [redirectUser, currentUser]);
 
   const toggleAuth = () => {
-    setIsSignup(prevState => {
-      if (prevState) {
-        setAuthFields(loginFields);
+    setAuthType(prevState => {
+      if (prevState === 'signup') {
         setState(loginPayload);
-      } else {
-        setAuthFields(signupFields);
-        setState(signupPayload);
+        return 'login';
       }
-      return !prevState;
+      setState(signupPayload);
+      return 'signup';
     });
   };
 
@@ -77,9 +70,6 @@ export default function Auth() {
           email: state['email'],
           fullName: state['full_name'],
           phone: state['phone_number'],
-          registerNumber: state['reg_no'],
-          year: state['year'],
-          department: state['department'],
           registrations: 0, // default value for new oc member
         },
       })
@@ -121,43 +111,53 @@ export default function Auth() {
 
   const onSubmit = event => {
     event.preventDefault();
-    if (isSignup) signupUser();
+    if (authType === 'signup') signupUser();
     else loginUser();
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-wrapper">
-        <div className="logo-container">
-          <Image src="/logo.svg" alt="SYCon" width={127} height={53} />
-        </div>
-        {authFields.map(item => (
-          <div className="input-container" key={item.id}>
-            <TextField
-              sx={{ width: 300 }}
-              size="small"
-              value={state[item.id]}
-              type={item.type}
-              label={item.label}
-              onChange={e => onChange(e, item.id)}
-              inputProps={item.props}
-              variant="standard"
-            />
+    <>
+      <PageHead
+        title="Login/Signup to view your referrals"
+        description="Login/Signup to view your referrals"
+      />
+      <div className="auth-container">
+        <div className="auth-wrapper">
+          <div className="logo-container">
+            <Image src="/logo.svg" alt="SYCon" width={127} height={53} />
           </div>
-        ))}
-        <Button
-          variant="contained"
-          sx={{ width: 180, m: 3 }}
-          onClick={onSubmit}
-        >
-          {isSignup ? 'Signup' : 'Login'}
-        </Button>
-        <p>
-          {isSignup ? 'Already have an account?' : "Don't have an account yet?"}
-          &nbsp;
-          <span onClick={toggleAuth}>{isSignup ? 'Login' : 'Signup'}</span>
-        </p>
+          {authFields[authType].map(item => (
+            <div className="input-container" key={item.id}>
+              <TextField
+                sx={{ width: 300 }}
+                size="small"
+                value={state[item.id]}
+                type={item.type}
+                label={item.label}
+                onChange={e => onChange(e, item.id)}
+                inputProps={item.props}
+                variant="standard"
+              />
+            </div>
+          ))}
+          <Button
+            variant="contained"
+            sx={{ width: 180, m: 3 }}
+            onClick={onSubmit}
+          >
+            {authType === 'signup' ? 'Signup' : 'Login'}
+          </Button>
+          <p>
+            {authType === 'signup'
+              ? 'Already have an account?'
+              : "Don't have an account yet?"}
+            &nbsp;
+            <span onClick={toggleAuth}>
+              {authType === 'signup' ? 'Login' : 'Signup'}
+            </span>
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -16,7 +16,7 @@
     max-height: 100vh;
     max-width: 50vw;
     width: 50vw;
-    background-image: url('https://firebasestorage.googleapis.com/v0/b/sycon2022-46644.appspot.com/o/RegistrationCoverPic.png?alt=media&token=c01008a6-dba1-46fe-a3c9-29de86c38d10');
+    background-image: url('/RegistrationCoverPic.webp');
     background-repeat: no-repeat;
     background-size: 100% 100%;
     padding: 20px 83px;
@@ -80,9 +80,15 @@
         justify-content: space-between;
         align-items: center;
         width: 400px;
+        .input-container {
+          width: 30%;
+        }
         @include phone {
           flex-direction: column;
           width: 100%;
+          .input-container {
+            width: 100%;
+          }
         }
       }
     }

@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
-import CustomTable from 'components/Table';
+import dynamic from 'next/dynamic';
+import Tooltip from '@mui/material/Tooltip';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { firestore } from 'lib/firebase';
 import { useAuth } from 'lib/AuthProvider';
 import { referralColumns, lbColumns, amountSummary } from 'constants/dashboard';
-import Tooltip from '@mui/material/Tooltip';
+import PageHead from 'components/PageHead';
+
+const CustomTable = dynamic(() => import('components/Table'));
 
 export default function Dashboard({
   amountCollected,
@@ -21,49 +24,55 @@ export default function Dashboard({
     if (!currentUser || !router.query?.code) router.push('/auth');
   }, [currentUser, router]);
   return (
-    <div className="organizer-container">
-      <nav className="organizer-header">
-        <Image src="/logo.svg" alt="SYCon" width={160} height={70} />
-        <Tooltip title="Logout" onClick={logout}>
-          <div className="user">
-            {currentUser?.displayName.split(' ').map(x => x[0])}
+    <>
+      <PageHead
+        title="Organizer's Dashboard"
+        description="View all your referrals and move the leaderboard"
+      />
+      <div className="organizer-container">
+        <nav className="organizer-header">
+          <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
+          <Tooltip title="Logout" onClick={logout}>
+            <div className="user">
+              {currentUser?.displayName.split(' ').map(x => x[0])}
+            </div>
+          </Tooltip>
+        </nav>
+        <section className="organizer-body">
+          <div className="referrals-container">
+            <div className="amount-summary">
+              {amountSummary.map(item => (
+                <div className={item.id} key={item.id}>
+                  <h3>
+                    <span>&#8377;</span>
+                    {amountCollected[item.id]}
+                  </h3>
+                  <p>{item.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="referrals">
+              <h3>{referralSize}</h3>
+              <p>Referral{referrals.length > 1 ? 's' : ''}</p>
+              <CustomTable
+                rows={referrals}
+                columns={referralColumns}
+                tableMaxHeight={440}
+              />
+            </div>
           </div>
-        </Tooltip>
-      </nav>
-      <section className="organizer-body">
-        <div className="referrals-container">
-          <div className="amount-summary">
-            {amountSummary.map(item => (
-              <div className={item.id} key={item.id}>
-                <h3>
-                  <span>&#8377;</span>
-                  {amountCollected[item.id]}
-                </h3>
-                <p>{item.label}</p>
-              </div>
-            ))}
-          </div>
-          <div className="referrals">
-            <h3>{referralSize}</h3>
-            <p>Referral{referrals.length > 1 ? 's' : ''}</p>
+          <div className="leaderboard">
+            <p>LeaderBoard</p>
             <CustomTable
-              rows={referrals}
-              columns={referralColumns}
-              tableMaxHeight={440}
+              rows={leaderboard}
+              columns={lbColumns}
+              tableMaxHeight={720}
+              highlighted={highlighted}
             />
           </div>
-        </div>
-        <div className="leaderboard">
-          <p>LeaderBoard</p>
-          <CustomTable
-            rows={leaderboard}
-            columns={lbColumns}
-            tableMaxHeight={720}
-            highlighted={highlighted}
-          />
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }
 
@@ -90,13 +99,10 @@ export const getServerSideProps = async ({ res, query: ctxQuery }) => {
         year: data.year,
         branch: data.branch,
         paymentMode: data.hasPaid ? 'Online' : 'Cash',
-        key: data.email,
+        key: `${data.email}_${data.year}_${data.branch}`,
       });
-      if (data.hasPaid) {
-        amountCollected.online += 100;
-      } else {
-        amountCollected.cash += 100;
-      }
+      if (data.hasPaid) amountCollected.online += 100;
+      else amountCollected.cash += 100;
     }
   });
   let leaderboard = [],
@@ -113,8 +119,6 @@ export const getServerSideProps = async ({ res, query: ctxQuery }) => {
     }
     leaderboard.push({
       fullName: data.fullName,
-      year: data.year,
-      department: data.department,
       registrations: data.registrations,
       position: leaderboard.length + 1,
       key: data.email,

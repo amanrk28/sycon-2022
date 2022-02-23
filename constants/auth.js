@@ -19,20 +19,9 @@ const signupFields = [
     type: 'text',
     props: { maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' },
   },
-  {
-    id: 'reg_no',
-    label: 'Register No.',
-    type: 'text',
-    props: { maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' },
-  },
-  { id: 'department', label: 'Department', type: 'text', props: {} },
-  {
-    id: 'year',
-    label: 'Year',
-    type: 'text',
-    props: { maxLength: 1, inputMode: 'numeric', pattern: '[0-9]*' },
-  },
 ];
+
+const authFields = { login: loginFields, signup: signupFields };
 
 const loginPayload = { email: '', password: '' };
 const signupPayload = {
@@ -41,9 +30,6 @@ const signupPayload = {
   confirmPassword: '',
   full_name: '',
   phone_number: '',
-  reg_no: '',
-  department: '',
-  year: '1',
 };
 
-export { loginFields, loginPayload, signupFields, signupPayload };
+export { loginPayload, signupPayload, authFields };

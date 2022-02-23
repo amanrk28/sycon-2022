@@ -1,3 +1,4 @@
+const numericProps = { inputMode: 'numeric', pattern: '[0-9]*' };
 const inputFields = [
   { id: 'fullName', label: 'Full Name', type: 'text', props: {} },
   { id: 'email', label: 'College Email ID', type: 'email', props: {} },
@@ -6,22 +7,25 @@ const inputFields = [
     id: 'phone',
     label: 'Phone Number',
     type: 'text',
-    props: { maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' },
+    props: { maxLength: 10, ...numericProps },
   },
   {
     id: 'year',
     label: 'Year',
     type: 'text',
-    props: { maxLength: 1, inputMode: 'numeric', pattern: '[0-9]*' },
+    props: { maxLength: 1, ...numericProps },
   },
   {
     id: 'dropdown-inputs',
+    label: 'Dropdown Inputs',
+    type: 'dropdown',
+    props: {},
   },
   {
     id: 'referralCode',
     label: 'Referral Code',
     type: 'text',
-    props: { maxLength: 4, inputMode: 'numeric', pattern: '[0-9]*' },
+    props: { maxLength: 4, ...numericProps },
   },
 ];
 
@@ -39,4 +43,10 @@ const branchNames = [
 const degreeNames = ['B.Tech', 'B.E.'];
 const collegeNames = ['SSN', 'SNU'];
 
-export { inputFields, branchNames, degreeNames, collegeNames };
+const dropdowns = [
+  { id: 'college', label: 'College', list: collegeNames, open: 'openCollege' },
+  { id: 'degree', label: 'Degree', list: degreeNames, open: 'openDegree' },
+  { id: 'branch', label: 'Branch', list: branchNames, open: 'openBranch' },
+];
+
+export { inputFields, dropdowns };

@@ -13,7 +13,7 @@ const toastOptions = {
   },
 };
 
-function MyApp({ Component, pageProps }) {
+function SyconApp({ Component, pageProps }) {
   return (
     <AuthProvider>
       <Component {...pageProps} />
@@ -22,4 +22,4 @@ function MyApp({ Component, pageProps }) {
   );
 }
 
-export default MyApp;
+export default SyconApp;

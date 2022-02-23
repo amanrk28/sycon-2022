@@ -15,29 +15,22 @@ const referralColumns = [
   },
 ];
 const lbColumns = [
-  { id: 'fullName', label: 'Student Name', minWidth: 100, align: 'left' },
-  { id: 'year', label: 'Year', minWidth: 50, align: 'center' },
-  {
-    id: 'department',
-    label: 'Department',
-    minWidth: 150,
-    align: 'center',
-  },
-  {
-    id: 'registrations',
-    label: 'Referrals',
-    minWidth: 50,
-    align: 'center',
-  },
   {
     id: 'position',
     label: '',
-    minWidth: 40,
+    minWidth: 60,
+  },
+  { id: 'fullName', label: 'Student Name', minWidth: 100, align: 'left' },
+  {
+    id: 'registrations',
+    label: 'Referrals',
+    minWidth: 100,
+    align: 'center',
   },
 ];
 
 const amountSummary = [
-  { id: 'cash', label: 'Cash to be Collected' },
+  { id: 'cash', label: 'Cash (offline collection)' },
   { id: 'online', label: 'Online Collection' },
 ];
 export { referralColumns, lbColumns, amountSummary };

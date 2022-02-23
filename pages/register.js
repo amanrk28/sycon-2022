@@ -2,37 +2,18 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import axios from 'axios';
-import Stripe from 'stripe';
-import { loadStripe } from '@stripe/stripe-js';
 import toast from 'react-hot-toast';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import {
-  inputFields,
-  branchNames,
-  degreeNames,
-  collegeNames,
-} from 'constants/register';
 import PageHead from 'components/PageHead';
 import Dropdown from 'components/dropdown';
-import { sanitizeData } from 'utils/util';
-import { setLs, lsKeys } from 'utils/lsUtil';
+import { inputFields, dropdowns } from 'constants/register';
+import { sanitizeData, generate4DigitNumber, loadScript } from 'utils/util';
+import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
 
 const textFieldSx = { width: 400 };
 
-const dropdowns = [
-  { id: 'college', label: 'College', list: collegeNames, open: 'openCollege' },
-  { id: 'degree', label: 'Degree', list: degreeNames, open: 'openDegree' },
-  { id: 'branch', label: 'Branch', list: branchNames, open: 'openBranch' },
-];
-
-function generate4DigitNumber() {
-  return Math.floor(Math.random() * 10000) + 1;
-}
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY);
-
-export default function Register({ prices }) {
+export default function Register() {
   const router = useRouter();
   const [payloadData, setPayloadData] = useState({
     fullName: '',
@@ -56,32 +37,84 @@ export default function Register({ prices }) {
     branch: false,
     referralCode: false,
   });
-  const [anchorElDegree, setAnchorElDegree] = useState(null);
-  const [anchorElBranch, setAnchorElBranch] = useState(null);
-  const [anchorElCollege, setAnchorElCollege] = useState(null);
+  const [anchorEl, setAnchorEl] = useState({
+    degree: null,
+    branch: null,
+    college: null,
+  });
   const openVar = {
-    openDegree: Boolean(anchorElDegree),
-    openBranch: Boolean(anchorElBranch),
-    openCollege: Boolean(anchorElCollege),
+    openDegree: Boolean(anchorEl.degree),
+    openBranch: Boolean(anchorEl.branch),
+    openCollege: Boolean(anchorEl.college),
   };
   const handleClick = (event, id) => {
-    if (id === 'degree') setAnchorElDegree(event.currentTarget);
-    else if (id === 'college') setAnchorElCollege(event.currentTarget);
-    else setAnchorElBranch(event.currentTarget);
+    setAnchorEl({ ...anchorEl, [id]: event.currentTarget });
   };
 
   const handleClose = (e, id) => {
     const value = e.target.getAttribute('name');
     if (value) setPayloadData({ ...payloadData, [id]: value });
-    if (id === 'degree') setAnchorElDegree(null);
-    else if (id === 'college') setAnchorElCollege(null);
-    else setAnchorElBranch(null);
+    setAnchorEl({ ...anchorEl, [id]: null });
   };
 
   const onChange = (event, key) => {
     const { value } = event.target;
     setPayloadData({ ...payloadData, [key]: value });
   };
+
+  async function displayRazorPay(userData) {
+    const res = await loadScript(
+      'https://checkout.razorpay.com/v1/checkout.js'
+    );
+
+    if (!res) {
+      alert('Razorpay SDK failed to load. Are you online?');
+      return;
+    }
+
+    const razorpayData = await axios({
+      baseURL: window.location.origin,
+      method: 'POST',
+      url: '/api/razorpay',
+    });
+
+    const options = {
+      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
+      currency: razorpayData.data.currency,
+      amount: razorpayData.data.amount.toString(),
+      order_id: razorpayData.data.id,
+      name: 'SYCon 2022',
+      description: 'Creating Leaders and inspiring change',
+      prefill: {
+        name: userData.fullName,
+        email: userData.email,
+        contact: userData.phone,
+      },
+      handler: async function (res) {
+        const username = getSs(ssKeys.firebaseRegUserRef);
+        if (username && userData.referralCode) {
+          await axios({
+            baseUrl: window.location.origin,
+            method: 'PUT',
+            url: '/api/registration',
+            data: {
+              username,
+              referralCode: userData.referralCode,
+              hasPaid: true,
+              paymentId: res.razorpay_payment_id,
+            },
+          });
+          clearSs();
+          router.push('/success');
+        }
+      },
+    };
+    const paymentObject = new window.Razorpay(options);
+    paymentObject.on('payment.failed', res => {
+      toast.error(res.error.description);
+    });
+    paymentObject.open();
+  }
 
   const onSubmit = async (event, paymentMode) => {
     event.preventDefault();
@@ -95,8 +128,7 @@ export default function Register({ prices }) {
       const username =
         data.fullName.substring(0, 15).toLowerCase().replace(/\s/g, '_') +
         generate4DigitNumber();
-      setLs(lsKeys.firebaseRegUserRef, username);
-      setLs(lsKeys.refCode, data.referralCode);
+      setSs(ssKeys.firebaseRegUserRef, username);
       await axios({
         baseURL: window.location.origin,
         method: 'POST',
@@ -104,28 +136,15 @@ export default function Register({ prices }) {
         data: { ...data, username, hasPaid: false },
       });
     }
-    if (paymentMode === 'online-payment') {
-      // Launch stripe checkout session
-      const res = await axios({
-        baseURL: window.location.origin,
-        method: 'POST',
-        url: '/api/checkout_session',
-        data: {
-          priceId: prices[0].id,
-          email: data.email || '',
-        },
-      });
-      window.location = res.data.url;
-    } else {
-      router.push('/registration_success');
-    }
+    if (paymentMode === 'online-payment') displayRazorPay(data);
+    else router.push('/registration_success');
   };
 
   return (
     <>
       <PageHead
         title="SYCon2022 - Creating Leaders and Inspiring Change"
-        description="Generated by create next app"
+        description="Creating Leaders and Inspiring Change"
       />
 
       <div className="register-container">
@@ -139,7 +158,7 @@ export default function Register({ prices }) {
           <div className="input-fields">
             {inputFields.map(field => {
               return field.id === 'dropdown-inputs' ? (
-                <div className="dropdown-input">
+                <div className="dropdown-input" key={field.id}>
                   {dropdowns.map(dd => (
                     <div className="input-container" key={dd.id}>
                       <Dropdown
@@ -149,13 +168,7 @@ export default function Register({ prices }) {
                         open={openVar[dd.open]}
                         handleClick={handleClick}
                         handleClose={handleClose}
-                        anchor={
-                          dd.id === 'degree'
-                            ? anchorElDegree
-                            : dd.id === 'college'
-                            ? anchorElCollege
-                            : anchorElBranch
-                        }
+                        anchor={anchorEl[dd.id]}
                         error={error[dd.id]}
                         list={dd.list}
                       />
@@ -203,13 +216,3 @@ export default function Register({ prices }) {
     </>
   );
 }
-
-export const getServerSideProps = async () => {
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2020-08-27',
-  });
-  const prices = await stripe.prices.list({
-    active: true,
-  });
-  return { props: { prices: prices.data } };
-};
