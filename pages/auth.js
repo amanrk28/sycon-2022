@@ -6,8 +6,15 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import toast from 'react-hot-toast';
 import { sendEmailVerification } from 'firebase/auth';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from 'lib/firebase';
 import { useAuth } from 'lib/AuthProvider';
-import { loginPayload, signupPayload, authFields } from 'constants/auth';
+import {
+  loginPayload,
+  signupPayload,
+  authFields,
+  ADMIN_USERS,
+} from 'constants/auth';
 import PageHead from 'components/PageHead';
 
 export default function Auth() {
@@ -16,7 +23,9 @@ export default function Auth() {
   const router = useRouter();
   const { login, signup, addUserDetail, currentUser } = useAuth();
   useEffect(() => {
-    if (currentUser) redirectUser(currentUser.uid);
+    if (currentUser) {
+      redirectUser({ uid: currentUser.uid, admin: currentUser.admin });
+    }
   }, [redirectUser, currentUser]);
 
   const toggleAuth = () => {
@@ -35,14 +44,18 @@ export default function Auth() {
   };
 
   const redirectUser = useCallback(
-    uid => {
-      axios({
-        baseUrl: window.location.origin,
-        method: 'GET',
-        url: `/api/user?uid=${uid}`,
-      }).then(res => {
-        router.push(`/dashboard/${res.data.referral_code}`);
-      });
+    ({ uid, admin }) => {
+      if (admin === true) {
+        return router.push('event_head');
+      } else {
+        axios({
+          baseUrl: window.location.origin,
+          method: 'GET',
+          url: `/api/user?uid=${uid}`,
+        }).then(res => {
+          router.push(`/dashboard/${res.data.referral_code}`);
+        });
+      }
     },
     [router]
   );
@@ -56,26 +69,32 @@ export default function Auth() {
       toast.error('Passwords do not match');
       return;
     }
+    const addAdminRole = httpsCallable(functions, 'addAdminRole');
     const { user } = await signup(state.email, state.password);
     if (user) {
+      let userData = {
+        uid: user.uid,
+        email: state['email'],
+        fullName: state['full_name'],
+        phone: state['phone_number'],
+        admin: false,
+      };
       await sendEmailVerification(user);
       toast.success('Verification email sent!');
       await addUserDetail(user, state.full_name);
+      if (ADMIN_USERS.includes(user.email)) {
+        userData = { ...userData, admin: true };
+      }
+      addAdminRole({ email: user.email }).then(res => console.log(res));
       axios({
         baseURL: window.location.origin,
         method: 'POST',
         url: '/api/user',
-        data: {
-          uid: user.uid,
-          email: state['email'],
-          fullName: state['full_name'],
-          phone: state['phone_number'],
-          registrations: 0, // default value for new oc member
-        },
+        data: userData,
       })
         .then(() => {
           toast.success('Sign up successful!');
-          redirectUser(user.uid);
+          redirectUser({ uid: user.uid, admin: userData.admin });
         })
         .catch(() => {
           toast.error('Unable to post data');
@@ -90,7 +109,9 @@ export default function Auth() {
       const { user } = await login(state.email, state.password);
       toast.dismiss(toastId);
       toast.success('Welcome Back!');
-      if (user) redirectUser(user.uid);
+      if (user) {
+        redirectUser({ uid: user.uid, admin: user.admin });
+      }
     } catch (err) {
       if (err.code === 'auth/user-not-found') {
         toast.error('Email not found! Did you mean to sign up?');

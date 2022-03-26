@@ -10,17 +10,24 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { uid, email, fullName, phone } = req.body;
+    const { uid, email, fullName, phone, admin } = req.body;
 
     const userDoc = doc(firestore, 'users', uid);
 
     try {
-      await setDoc(userDoc, {
+      let userDocData = {
         email: email,
         fullName: fullName,
         phone: phone,
-        referral_code: generateNumber(),
-      });
+      };
+      if (admin === false) {
+        userDocData = {
+          ...userDocData,
+          referral_code: generateNumber(),
+          registrations: 0,
+        };
+      }
+      await setDoc(userDoc, userDocData);
       res.status(200).send({
         message: 'User created successfully',
         fullName,

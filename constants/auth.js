@@ -32,4 +32,6 @@ const signupPayload = {
   phone_number: '',
 };
 
-export { loginPayload, signupPayload, authFields };
+const ADMIN_USERS = ['amankhemka.ak28@gmail.com'];
+
+export { loginPayload, signupPayload, authFields, ADMIN_USERS };

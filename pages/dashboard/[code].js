@@ -21,7 +21,12 @@ export default function Dashboard({
   const { currentUser, logout } = useAuth();
   const router = useRouter();
   useEffect(() => {
-    if (!currentUser || !router.query?.code) router.push('/auth');
+    if (
+      !currentUser ||
+      !router.query?.code ||
+      router.query.code === 'undefined'
+    )
+      router.push('/auth');
   }, [currentUser, router]);
   return (
     <>
@@ -77,7 +82,7 @@ export default function Dashboard({
 }
 
 export const getServerSideProps = async ({ res, query: ctxQuery }) => {
-  if (!ctxQuery.code) {
+  if (!ctxQuery.code || ctxQuery.code === 'undefined') {
     res.statusCode = 302;
     res.setHeader('Location', '/auth');
     return { props: {} };
