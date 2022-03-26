@@ -98,7 +98,7 @@ export const getServerSideProps = async ({ res, query: ctxQuery }) => {
         fullName: data.fullName,
         year: data.year,
         branch: data.branch,
-        paymentMode: data.hasPaid ? 'Online' : 'Cash',
+        paymentMode: data.hasPaid ? 'Razorpay' : 'Cash',
         key: `${data.email}_${data.year}_${data.branch}`,
       });
       if (data.hasPaid) amountCollected.online += 100;

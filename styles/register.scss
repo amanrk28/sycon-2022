@@ -1,5 +1,5 @@
 @mixin phone {
-  @media (max-width: 576px) {
+  @media (max-width: 900px) {
     @content;
   }
 }
@@ -58,6 +58,7 @@
       margin: 0;
       width: 100%;
       .MuiTextField-root {
+        max-width: 400px;
         width: 100%;
       }
     }
@@ -72,6 +73,7 @@
       .input-container {
         margin: 14px 0;
         @include phone {
+          max-width: 400px;
           width: 100%;
         }
       }
@@ -99,6 +101,7 @@
       width: 400px;
       margin: 12px 0;
       @include phone {
+        max-width: 400px;
         flex-direction: column;
         width: 100%;
         button {

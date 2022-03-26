@@ -45,6 +45,7 @@ export default async function handler(req, res) {
         college,
         hasPaid,
         referral_code: referralCode,
+        emailSent: false,
         updatedAt: serverTimestamp(),
       });
     } catch (err) {

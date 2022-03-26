@@ -49,4 +49,9 @@ const dropdowns = [
   { id: 'branch', label: 'Branch', list: branchNames, open: 'openBranch' },
 ];
 
-export { inputFields, dropdowns };
+const checkoutButtons = [
+  { text: 'Pay Now', id: 'online-payment', variant: 'contained' },
+  { text: 'Pay Later', id: 'offline-payment', variant: 'outlined' },
+];
+
+export { inputFields, dropdowns, checkoutButtons };

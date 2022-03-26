@@ -41,7 +41,7 @@ export default function Auth() {
         method: 'GET',
         url: `/api/user?uid=${uid}`,
       }).then(res => {
-        router.push(`/dashboard?code=${res.data.referral_code}`);
+        router.push(`/dashboard/${res.data.referral_code}`);
       });
     },
     [router]
@@ -95,12 +95,8 @@ export default function Auth() {
       if (err.code === 'auth/user-not-found') {
         toast.error('Email not found! Did you mean to sign up?');
       } else if (err.code === 'auth/wrong-password') {
-        toast(
-          'The password entered was incorrect or you have not verified your email yet.',
-          {
-            duration: 7000,
-            icon: '❌',
-          }
+        toast.error(
+          'The password entered was incorrect or you have not verified your email yet.'
         );
       } else {
         toast.error('An unexpected error has occurred. ☠️');
