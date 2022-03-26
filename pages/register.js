@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import PageHead from 'components/PageHead';
-import Dropdown from 'components/dropdown';
+import Dropdown from 'components/Dropdown';
 import { inputFields, dropdowns, checkoutButtons } from 'constants/register';
 import { sanitizeData, generate4DigitNumber, loadScript } from 'utils/util';
 import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
