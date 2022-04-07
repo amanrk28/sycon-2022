@@ -35,23 +35,9 @@ exports.sendRegistrationEmail = functions.firestore
     };
     transporter.sendMail(options, function (error, info) {
       if (error) console.log(error);
-      else console.log('Email Sent: ', info.response);
+      else {
+        snap.after.ref.set({ emailSent: true }, { merge: true });
+        console.log('Email Sent: ', info.response);
+      }
     });
   });
-
-exports.addAdminRole = functions.https.onCall((data, context) => {
-  return admin
-    .auth()
-    .getUserByEmail(data.email)
-    .then(user => {
-      return admin.auth().setCustomUserClaims(user.uid, { admin: true });
-    })
-    .then(() => {
-      return {
-        message: `Success ${data.email} has been made admin`,
-      };
-    })
-    .catch(err => {
-      return err;
-    });
-});

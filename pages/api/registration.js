@@ -45,6 +45,8 @@ export default async function handler(req, res) {
         college,
         hasPaid,
         referral_code: referralCode,
+        isEntry: false,
+        isLunch: false,
         emailSent: false,
         updatedAt: serverTimestamp(),
       });
@@ -81,6 +83,7 @@ export default async function handler(req, res) {
     );
     const batch = writeBatch(firestore);
     try {
+      // Email sent after updating
       batch.update(registrationDoc, {
         referral_code: parsedRC,
         hasPaid,

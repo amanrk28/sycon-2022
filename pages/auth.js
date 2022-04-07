@@ -6,15 +6,8 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import toast from 'react-hot-toast';
 import { sendEmailVerification } from 'firebase/auth';
-import { httpsCallable } from 'firebase/functions';
-import { functions } from 'lib/firebase';
 import { useAuth } from 'lib/AuthProvider';
-import {
-  loginPayload,
-  signupPayload,
-  authFields,
-  ADMIN_USERS,
-} from 'constants/auth';
+import { loginPayload, signupPayload, authFields } from 'constants/auth';
 import PageHead from 'components/PageHead';
 
 export default function Auth() {
@@ -69,7 +62,6 @@ export default function Auth() {
       toast.error('Passwords do not match');
       return;
     }
-    const addAdminRole = httpsCallable(functions, 'addAdminRole');
     const { user } = await signup(state.email, state.password);
     if (user) {
       let userData = {
@@ -77,15 +69,10 @@ export default function Auth() {
         email: state['email'],
         fullName: state['full_name'],
         phone: state['phone_number'],
-        admin: false,
       };
       await sendEmailVerification(user);
       toast.success('Verification email sent!');
       await addUserDetail(user, state.full_name);
-      if (ADMIN_USERS.includes(user.email)) {
-        userData = { ...userData, admin: true };
-      }
-      addAdminRole({ email: user.email }).then(res => console.log(res));
       axios({
         baseURL: window.location.origin,
         method: 'POST',

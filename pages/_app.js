@@ -4,6 +4,9 @@ import 'styles/globals.css';
 import 'styles/register.scss';
 import 'styles/auth.scss';
 import 'styles/dashboard.scss';
+import 'styles/eventhead.scss';
+import 'styles/doughnut.scss';
+import 'styles/card.scss';
 
 const toastOptions = {
   duration: 4000,
