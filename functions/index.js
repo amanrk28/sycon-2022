@@ -6,7 +6,7 @@ const renderHtml = require('./emailTemplate.js');
 admin.initializeApp();
 
 const SENDER_EMAIL = 'ssnsycon2022@gmail.com';
-const SENDER_PASS = 'Lakshya@$Ycon';
+const SENDER_PASS = 'lapohoadtwxhxjbf';
 
 exports.sendRegistrationEmail = functions.firestore
   .document('registrations/{docId}')
