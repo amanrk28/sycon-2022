@@ -7,7 +7,15 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import PageHead from 'components/PageHead';
 import Dropdown from 'components/Dropdown';
-import { inputFields, dropdowns, checkoutButtons } from 'constants/register';
+import {
+  inputFields,
+  checkoutButtons,
+  snuBranchNames,
+  snuDegreeNames,
+  ssnBranchNames,
+  ssnDegreeNames,
+  collegeNames,
+} from 'constants/register';
 import { sanitizeData, generate4DigitNumber, loadScript } from 'utils/util';
 import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
 
@@ -119,6 +127,9 @@ export default function Register() {
   const onSubmit = async (event, paymentMode) => {
     event.preventDefault();
     const { data, errors } = sanitizeData(payloadData);
+    if (paymentMode === 'offline-payment') {
+      delete data.referralCode;
+    }
     setError(errors);
     if (Object.values(errors).includes(true)) {
       toast.error('Fill all fields to continue');
@@ -140,6 +151,20 @@ export default function Register() {
     else router.push('/registration_success');
   };
 
+  const getDropdownList = id => {
+    console.log(id);
+    if (id === 'college') return collegeNames;
+    if (id === 'degree') {
+      if (payloadData.college === 'SNU') return snuDegreeNames;
+      else return ssnDegreeNames;
+    }
+    if (id === 'branch') {
+      if (payloadData.college === 'SNU') return snuBranchNames;
+      else return ssnBranchNames;
+    }
+    return [];
+  };
+
   return (
     <>
       <PageHead
@@ -149,9 +174,9 @@ export default function Register() {
 
       <div className="register-container">
         <div className="cover-container">
-          <Image src="/logo.svg" alt="SYCon" width={127} height={53} />
-          <h1>SYCon</h1>
-          <p>Creating leaders and inspiring change</p>
+          <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
+          <h1>SYCon Ticketing</h1>
+          <p>Creating leaders & Inspiring change</p>
         </div>
         <div className="register-form">
           <h3>Student Registration</h3>
@@ -159,21 +184,53 @@ export default function Register() {
             {inputFields.map(field => {
               return field.id === 'dropdown-inputs' ? (
                 <div className="dropdown-input" key={field.id}>
-                  {dropdowns.map(dd => (
-                    <div className="input-container" key={dd.id}>
-                      <Dropdown
-                        id={dd.id}
-                        value={payloadData[dd.id]}
-                        label={dd.label}
-                        open={openVar[dd.open]}
-                        handleClick={handleClick}
-                        handleClose={handleClose}
-                        anchor={anchorEl[dd.id]}
-                        error={error[dd.id]}
-                        list={dd.list}
-                      />
-                    </div>
-                  ))}
+                  <div className="input-container">
+                    <Dropdown
+                      id="college"
+                      value={payloadData.college}
+                      label="College"
+                      open={openVar.openCollege}
+                      handleClick={handleClick}
+                      handleClose={handleClose}
+                      anchor={anchorEl.college}
+                      error={error.college}
+                      list={collegeNames}
+                    />
+                  </div>
+                  <div className="input-container">
+                    <Dropdown
+                      id="degree"
+                      value={payloadData.degree}
+                      label="Degree"
+                      open={openVar.openDegree}
+                      handleClick={handleClick}
+                      handleClose={handleClose}
+                      anchor={anchorEl.degree}
+                      error={error.degree}
+                      list={
+                        payloadData.college === 'SSN'
+                          ? ssnDegreeNames
+                          : snuDegreeNames
+                      }
+                    />
+                  </div>
+                  <div className="input-container">
+                    <Dropdown
+                      id="branch"
+                      value={payloadData.branch}
+                      label="Branch"
+                      open={openVar.openBranch}
+                      handleClick={handleClick}
+                      handleClose={handleClose}
+                      anchor={anchorEl.branch}
+                      error={error.branch}
+                      list={
+                        payloadData.college === 'SSN'
+                          ? ssnBranchNames
+                          : snuBranchNames
+                      }
+                    />
+                  </div>
                 </div>
               ) : (
                 <div className="input-container" key={field.id}>

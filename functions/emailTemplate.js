@@ -5,8 +5,9 @@ module.exports = function renderHtml({ fullName, qr }) {
   <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
   <head>
       <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      <meta name="x-apple-disable-message-reformatting">
+      <meta name="viewport" content="width=device-width,initial-scale=1" />
+      <meta name="x-apple-disable-message-reformatting" />
+      <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
       <title></title>
       <style>
           table, td, div, h1, p {font-family: Arial, sans-serif;}
@@ -25,11 +26,22 @@ module.exports = function renderHtml({ fullName, qr }) {
                     <tr>
                         <td style="padding:36px 30px 42px 30px;">
                             <table role="presentation" style="width:100%;border-collapse:collapse;border:0;border-spacing:0;">
-                                <tr>
-                                    <td style="padding:0 0 36px 0;color:#153643;">
-                                        <h1 style="font-size:24px;margin:0 0 20px 0;text-align:center; font-family:Arial,sans-serif;">Registration Successful!!</h1>
-                                        <p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;"> Hey ${fullName}!</p>
-                                </tr>
+                            <tr>
+                            <td style="padding:0 0 16px 0;color:#153643;">
+                                <h1 style="font-size:24px;margin:0 0 20px 0;text-align:center; font-family:Arial,sans-serif;">Registration Successful!!</h1>
+                                <p style="margin:0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;"> Hey ${fullName}!</p>
+                            </td>
+                        </tr>
+                      <tr>
+                        <td>
+                          <p>Thanks for booking your ticket for the scillintilating spectacle SYCon'22.</p>
+                          <p>Hurrah!!!!<br />
+                            Your ticket for the trailblazer has been confirmed!!
+                            "The more you celebrate life,the more comes to celebrate in life".
+                            Celebrate the grand gala on <b> 20 May, 2022</b> at main auditorium and have a memorable day!!
+                            And <span style="font-size:20px;font-weight:600;color:#00C0FF;">don't forget to show this unique QR code</span> generated exclusively for you at the auditorium entrance and at the snacks and food counters on that day!!</p>
+                        </td>
+                      </tr>
                             </table>
                         </td>
                     </tr>
@@ -46,18 +58,6 @@ module.exports = function renderHtml({ fullName, qr }) {
                                           <p style="margin:0;font-size:14px;line-height:16px;font-family:Arial,sans-serif;color:#ffffff;">
                                               &reg; SSN SYCon 2022<br/>
                                           </p>
-                                      </td>
-                                      <td style="padding:0;width:50%;" align="right">
-                                          <table role="presentation" style="border-collapse:collapse;border:0;border-spacing:0;">
-                                              <tr>
-                                                  <td style="padding:0 0 0 10px;width:38px;">
-                                                      <a href="http://www.twitter.com/" style="color:#ffffff;"><img src="https://assets.codepen.io/210284/tw_1.png" alt="Twitter" width="38" style="height:auto;display:block;border:0;" /></a>
-                                                  </td>
-                                                  <td style="padding:0 0 0 10px;width:38px;">
-                                                      <a href="http://www.facebook.com/" style="color:#ffffff;"><img src="https://assets.codepen.io/210284/fb_1.png" alt="Facebook" width="38" style="height:auto;display:block;border:0;" /></a>
-                                                  </td>
-                                              </tr>
-                                          </table>
                                       </td>
                                   </tr>
                               </table>

@@ -29,18 +29,21 @@
       padding: 12px 40px;
     }
     h1 {
-      font-size: 100px;
-      font-weight: 500;
+      font-size: 32px;
+      font-weight: 700;
       margin: 32px 0;
+      backdrop-filter: blur(32px);
+      padding: 21px 38px;
+      border-radius: 72px;
+      width: fit-content;
       @include phone {
-        font-size: 42px;
         margin: 16px 0;
       }
     }
     p {
-      font-size: 42px;
-      font-weight: 300;
-      max-width: 500px;
+      font-size: 72px;
+      font-weight: 700;
+      max-width: 668px;
       margin: 0;
       @include phone {
         font-size: 20px;

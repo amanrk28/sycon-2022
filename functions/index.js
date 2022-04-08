@@ -14,7 +14,7 @@ exports.sendRegistrationEmail = functions.firestore
     const data = snap.after.data();
     if (!data.email && data.hasPaid !== true && data.emailSent === true) {
       console.log('Email cannot be sent/ Email already sent');
-      return;
+      return 0;
     }
 
     const transporter = nodemailer.createTransport({
@@ -25,7 +25,7 @@ exports.sendRegistrationEmail = functions.firestore
       },
     });
     const makerId = ctx.params.docId;
-    const qr = `https://chart.googleapis.com/chart?chs=250x250&cht=qr&chl=${makerId}`;
+    const qr = `https://chart.googleapis.com/chart?chs=280x280&cht=qr&chl=${makerId}`;
 
     const options = {
       from: 'ssnsycon2022@gmail.com',
@@ -37,7 +37,8 @@ exports.sendRegistrationEmail = functions.firestore
       if (error) console.log(error);
       else {
         snap.after.ref.set({ emailSent: true }, { merge: true });
-        console.log('Email Sent: ', info.response);
+        console.log('Email Sent: ', data.email, info.response);
       }
     });
+    return 0;
   });

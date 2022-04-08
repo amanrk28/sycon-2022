@@ -34,11 +34,12 @@ export default function Dropdown({
         onClose={e => handleClose(e, id)}
         MenuListProps={{ 'aria-labelledby': 'degree-button' }}
       >
-        {list.map(item => (
-          <MenuItem onClick={e => handleClose(e, id)} name={item} key={item}>
-            {item}
-          </MenuItem>
-        ))}
+        {list.length > 0 &&
+          list.map(item => (
+            <MenuItem onClick={e => handleClose(e, id)} name={item} key={item}>
+              {item}
+            </MenuItem>
+          ))}
       </Menu>
     </>
   );

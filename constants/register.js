@@ -29,7 +29,7 @@ const inputFields = [
   },
 ];
 
-const branchNames = [
+const ssnBranchNames = [
   'CSE',
   'IT',
   'ECE',
@@ -39,19 +39,24 @@ const branchNames = [
   'Civil',
   'Chemical',
 ];
+const snuBranchNames = ['IoT', 'AI & DS', 'General/Hons', 'PA'];
 
-const degreeNames = ['B.Tech', 'B.E.'];
+const ssnDegreeNames = ['B.Tech', 'B.E.'];
+const snuDegreeNames = ['B.Tech', 'B.Com'];
+
 const collegeNames = ['SSN', 'SNU'];
-
-const dropdowns = [
-  { id: 'college', label: 'College', list: collegeNames, open: 'openCollege' },
-  { id: 'degree', label: 'Degree', list: degreeNames, open: 'openDegree' },
-  { id: 'branch', label: 'Branch', list: branchNames, open: 'openBranch' },
-];
 
 const checkoutButtons = [
   { text: 'Pay Now', id: 'online-payment', variant: 'contained' },
   { text: 'Pay Later', id: 'offline-payment', variant: 'outlined' },
 ];
 
-export { inputFields, dropdowns, checkoutButtons };
+export {
+  inputFields,
+  checkoutButtons,
+  snuBranchNames,
+  snuDegreeNames,
+  ssnBranchNames,
+  ssnDegreeNames,
+  collegeNames,
+};
