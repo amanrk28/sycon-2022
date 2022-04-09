@@ -26,7 +26,6 @@ export default async function handler(req, res) {
       referralCode,
       college,
       username,
-      hasPaid,
     } = req.body;
 
     const registrationDoc = doc(firestore, 'registrations', username);
@@ -43,7 +42,7 @@ export default async function handler(req, res) {
         branch,
         phone,
         college,
-        hasPaid,
+        hasPaid: false,
         referral_code: referralCode,
         isEntry: false,
         isLunch: false,

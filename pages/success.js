@@ -34,7 +34,9 @@ export default function Success() {
             You will soon receive the payment receipt and instructions for event
             day on your email.
           </p>
-          <p style={{ fontSize: 18 }}>See you on (event date)😃</p>
+          <p style={{ fontSize: 18 }}>
+            See you on {process.env.NEXT_PUBLIC_EVENT_DATE}😃
+          </p>
         </div>
       </div>
     </>

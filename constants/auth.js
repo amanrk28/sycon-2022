@@ -19,6 +19,17 @@ const signupFields = [
     type: 'text',
     props: { maxLength: 10, inputMode: 'numeric', pattern: '[0-9]*' },
   },
+  { id: 'branch', label: 'Branch', type: 'text', props: {} },
+  {
+    id: 'year',
+    label: 'Year',
+    type: 'text',
+    props: {
+      maxLength: 1,
+      inputMode: 'numeric',
+      pattern: '[0-9]*',
+    },
+  },
 ];
 
 const authFields = { login: loginFields, signup: signupFields };
@@ -30,6 +41,8 @@ const signupPayload = {
   confirmPassword: '',
   full_name: '',
   phone_number: '',
+  year: '',
+  branch: '',
 };
 
 export { loginPayload, signupPayload, authFields };

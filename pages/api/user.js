@@ -1,6 +1,6 @@
 import { firestore } from 'lib/firebase';
 import { cors } from 'lib/middleware';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
 
 export default async function handler(req, res) {
   await cors(req, res);
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { uid, email, fullName, phone, admin } = req.body;
+    const { uid, email, fullName, phone } = req.body;
 
     const userDoc = doc(firestore, 'users', uid);
 
@@ -19,18 +19,14 @@ export default async function handler(req, res) {
         email: email,
         fullName: fullName,
         phone: phone,
+        referral_code: generateNumber(),
+        registrations: 0,
       };
-      if (admin === false) {
-        userDocData = {
-          ...userDocData,
-          referral_code: generateNumber(),
-          registrations: 0,
-        };
-      }
       await setDoc(userDoc, userDocData);
       res.status(200).send({
         message: 'User created successfully',
         fullName,
+        referralCode: userDocData.referral_code,
       });
     } catch (err) {
       res.status(400).send({
@@ -46,7 +42,12 @@ export default async function handler(req, res) {
     const userRef = doc(firestore, 'users', uid);
     try {
       const userData = (await getDoc(userRef)).data();
-      res.status(200).send({ ...userData });
+      const adminDocs = await getDocs(collection(firestore, 'admins'));
+      let isAdmin = false;
+      adminDocs.forEach(doc => {
+        if (doc.id === userData.email) isAdmin = true;
+      });
+      res.status(200).send({ ...userData, isAdmin });
     } catch (err) {
       res.status(404).send({
         message: 'Not found',

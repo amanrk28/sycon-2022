@@ -5,7 +5,6 @@ import { useAuth } from 'lib/AuthProvider';
 import PageHead from 'components/PageHead';
 import {
   Chart as ChartJS,
-  Title,
   Tooltip as ChartTooltip,
   LinearScale,
   CategoryScale,
@@ -14,6 +13,8 @@ import {
 import { Bar } from 'react-chartjs-2';
 import Doughnut from 'components/Doughnut';
 import Card from 'components/Card';
+import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { firestore } from 'lib/firebase';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ChartTooltip);
 
@@ -43,7 +44,7 @@ const barData = {
   ],
 };
 
-export default function EventHead() {
+export default function EventHead({ users }) {
   const { currentUser, logout } = useAuth();
   const [search, setSearch] = useState('');
   return (
@@ -83,13 +84,9 @@ export default function EventHead() {
               />
             </div>
             <div className="stats">
-              <Card />
-              <Card />
-              <Card />
-              <Card />
-              <Card />
-              <Card />
-              <Card />
+              {users.map(user => (
+                <Card key={user.online} data={user} />
+              ))}
             </div>
           </div>
         </div>
@@ -98,10 +95,38 @@ export default function EventHead() {
   );
 }
 
-// export const getServerSideProps = async ({ res, query: ctxQuery }) => {
-//   if (!ctxQuery.code || ctxQuery.code === 'undefined') {
-//     res.statusCode = 302;
-//     res.setHeader('Location', '/auth');
-//     return { props: {} };
-//   }
-// };
+export const getServerSideProps = async ({ res, query: ctxQuery }) => {
+  // if (!ctxQuery.code || ctxQuery.code === 'undefined') {
+  //   res.statusCode = 302;
+  //   res.setHeader('Location', '/auth');
+  //   return { props: {} };
+  // }
+  const usersQuerySnapshot = await getDocs(
+    query(collection(firestore, 'users'), orderBy('registrations', 'desc'))
+  );
+  let users = [];
+  usersQuerySnapshot.docs;
+  for (const userDoc of usersQuerySnapshot.docs) {
+    const userData = userDoc.data();
+    console.log(userData);
+    let x = { name: userData.fullName, cash: 0, online: 0 };
+    const registrationsSnapshot = await getDocs(
+      query(
+        collection(firestore, 'registrations'),
+        where('hasPaid', '==', true),
+        where('referral_code', '==', userData.referral_code)
+      )
+    );
+    registrationsSnapshot.forEach(regDoc => {
+      const regData = regDoc.data();
+      if (regData.paymentLink) x.online += 200;
+      else x.cash += 200;
+    });
+    users.push(x);
+  }
+  return {
+    props: {
+      users,
+    },
+  };
+};

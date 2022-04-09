@@ -144,25 +144,11 @@ export default function Register() {
         baseURL: window.location.origin,
         method: 'POST',
         url: '/api/registration',
-        data: { ...data, username, hasPaid: false },
+        data: { ...data, username },
       });
     }
     if (paymentMode === 'online-payment') displayRazorPay(data);
     else router.push('/registration_success');
-  };
-
-  const getDropdownList = id => {
-    console.log(id);
-    if (id === 'college') return collegeNames;
-    if (id === 'degree') {
-      if (payloadData.college === 'SNU') return snuDegreeNames;
-      else return ssnDegreeNames;
-    }
-    if (id === 'branch') {
-      if (payloadData.college === 'SNU') return snuBranchNames;
-      else return ssnBranchNames;
-    }
-    return [];
   };
 
   return (
@@ -174,9 +160,25 @@ export default function Register() {
 
       <div className="register-container">
         <div className="cover-container">
-          <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
-          <h1>SYCon Ticketing</h1>
-          <p>Creating leaders & Inspiring change</p>
+          <div className="top">
+            <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
+            <h1>SYCon Ticketing</h1>
+            <h3>Creating leaders & Inspiring change</h3>
+          </div>
+          <div className="sponsor-container">
+            <div>
+              <p>Title Sponsor</p>
+              <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
+            </div>
+            <div className="divider"></div>
+            <div>
+              <p>Official Sponsor</p>
+              <div className="sponsor-images">
+                <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
+                <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
+              </div>
+            </div>
+          </div>
         </div>
         <div className="register-form">
           <h3>Student Registration</h3>

@@ -9,6 +9,9 @@ import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from 'lib/AuthProvider';
 import { loginPayload, signupPayload, authFields } from 'constants/auth';
 import PageHead from 'components/PageHead';
+import { sanitizeAuthData } from 'utils/util';
+import Dropdown from 'components/Dropdown';
+import { ssnBranchNames } from 'constants/register';
 
 export default function Auth() {
   const [authType, setAuthType] = useState('login');
@@ -17,7 +20,7 @@ export default function Auth() {
   const { login, signup, addUserDetail, currentUser } = useAuth();
   useEffect(() => {
     if (currentUser) {
-      redirectUser({ uid: currentUser.uid, admin: currentUser.admin });
+      redirectUser({ uid: currentUser.uid });
     }
   }, [redirectUser, currentUser]);
 
@@ -37,18 +40,18 @@ export default function Auth() {
   };
 
   const redirectUser = useCallback(
-    ({ uid, admin }) => {
-      if (admin === true) {
-        return router.push('event_head');
-      } else {
-        axios({
-          baseUrl: window.location.origin,
-          method: 'GET',
-          url: `/api/user?uid=${uid}`,
-        }).then(res => {
+    ({ uid }) => {
+      axios({
+        baseUrl: window.location.origin,
+        method: 'GET',
+        url: `/api/user?uid=${uid}`,
+      }).then(res => {
+        if (res.data.isAdmin) {
+          router.push('/event_head');
+        } else {
           router.push(`/dashboard/${res.data.referral_code}`);
-        });
-      }
+        }
+      });
     },
     [router]
   );
@@ -60,6 +63,19 @@ export default function Auth() {
     }
     if (state.password !== state.confirmPassword) {
       toast.error('Passwords do not match');
+      return;
+    }
+    const { errors } = sanitizeAuthData(state);
+    if (errors.phone_number) {
+      toast.error('Enter a valid a phone number');
+      return;
+    }
+    if (errors.email) {
+      toast.error('Enter your college email to continue');
+      return;
+    }
+    if (errors.year) {
+      toast.error('Enter a valid year of study');
       return;
     }
     const { user } = await signup(state.email, state.password);
@@ -79,9 +95,11 @@ export default function Auth() {
         url: '/api/user',
         data: userData,
       })
-        .then(() => {
-          toast.success('Sign up successful!');
-          redirectUser({ uid: user.uid, admin: userData.admin });
+        .then(res => {
+          toast.success(
+            `Sign up successful! Your Referral Code is ${res.data.referralCode}`
+          );
+          redirectUser({ uid: user.uid });
         })
         .catch(() => {
           toast.error('Unable to post data');
@@ -97,7 +115,7 @@ export default function Auth() {
       toast.dismiss(toastId);
       toast.success('Welcome Back!');
       if (user) {
-        redirectUser({ uid: user.uid, admin: user.admin });
+        redirectUser({ uid: user.uid });
       }
     } catch (err) {
       if (err.code === 'auth/user-not-found') {

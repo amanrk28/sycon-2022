@@ -37,6 +37,9 @@ export default function Dashboard({
       <div className="organizer-container">
         <nav className="organizer-header">
           <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
+          <p>
+            Referral Code: <span>{router.query.code}</span>
+          </p>
           <Tooltip title="Logout" onClick={logout}>
             <div className="user">
               {currentUser?.displayName.split(' ').map(x => x[0])}
@@ -91,6 +94,7 @@ export const getServerSideProps = async ({ res, query: ctxQuery }) => {
   const regQuerySnapshot = await getDocs(
     query(
       collection(firestore, 'registrations'),
+      where('hasPaid', '==', true),
       where('referral_code', '==', referralCode)
     )
   );
@@ -103,11 +107,11 @@ export const getServerSideProps = async ({ res, query: ctxQuery }) => {
         fullName: data.fullName,
         year: data.year,
         branch: data.branch,
-        paymentMode: data.hasPaid ? 'Razorpay' : 'Cash',
+        paymentMode: data.paymentLink ? 'Razorpay' : 'Cash',
         key: `${data.email}_${data.year}_${data.branch}`,
       });
-      if (data.hasPaid) amountCollected.online += 100;
-      else amountCollected.cash += 100;
+      if (data.paymentLink) amountCollected.online += 200;
+      else amountCollected.cash += 200;
     }
   });
   let leaderboard = [],

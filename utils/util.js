@@ -67,3 +67,29 @@ export const loadScript = src => {
     document.body.appendChild(script);
   });
 };
+
+const ssnDomain = 'ssn.edu.in';
+const snuDomain = 'snuchennai.edu.in';
+export const sanitizeAuthData = data => {
+  let errors = {
+    email: false,
+    phone_number: false,
+    year: false,
+  };
+  if (data.email && emailValidation(data.email)) {
+    if (
+      !data.email.toLowerCase.includes(ssnDomain) ||
+      !data.email.toLowerCase.includes(snuDomain)
+    )
+      errors.email = true;
+  } else errors.email = true;
+  if (data.phone_number) {
+    const test = data.phone_number.match(/^\d{10}$/);
+    errors.phone_number = !test;
+  } else errors.phone_number = true;
+  if (data.year) {
+    const test = data.year.match(/^[1-4]$/);
+    errors.year = !test;
+  } else errors.year = true;
+  return { errors };
+};
