@@ -10,8 +10,6 @@ import { useAuth } from 'lib/AuthProvider';
 import { loginPayload, signupPayload, authFields } from 'constants/auth';
 import PageHead from 'components/PageHead';
 import { sanitizeAuthData } from 'utils/util';
-import Dropdown from 'components/Dropdown';
-import { ssnBranchNames } from 'constants/register';
 
 export default function Auth() {
   const [authType, setAuthType] = useState('login');

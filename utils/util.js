@@ -78,8 +78,8 @@ export const sanitizeAuthData = data => {
   };
   if (data.email && emailValidation(data.email)) {
     if (
-      !data.email.toLowerCase.includes(ssnDomain) ||
-      !data.email.toLowerCase.includes(snuDomain)
+      !data.email.toLowerCase().includes(ssnDomain) &&
+      !data.email.toLowerCase().includes(snuDomain)
     )
       errors.email = true;
   } else errors.email = true;

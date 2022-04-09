@@ -58,7 +58,7 @@ export default function EventHead({ users }) {
           <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
           <Tooltip title="Logout" onClick={logout}>
             <div className="user">
-              {currentUser?.displayName.split(' ').map(x => x[0]) || '12'}
+              {currentUser?.displayName?.split(' ').map(x => x[0]) || '12'}
             </div>
           </Tooltip>
         </nav>
@@ -95,7 +95,7 @@ export default function EventHead({ users }) {
   );
 }
 
-export const getServerSideProps = async ({ res, query: ctxQuery }) => {
+export const getServerSideProps = async ({ res }) => {
   // if (!ctxQuery.code || ctxQuery.code === 'undefined') {
   //   res.statusCode = 302;
   //   res.setHeader('Location', '/auth');

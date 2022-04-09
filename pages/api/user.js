@@ -41,13 +41,13 @@ export default async function handler(req, res) {
     const { uid } = req.query;
     const userRef = doc(firestore, 'users', uid);
     try {
-      const userData = (await getDoc(userRef)).data();
-      const adminDocs = await getDocs(collection(firestore, 'admins'));
-      let isAdmin = false;
-      adminDocs.forEach(doc => {
-        if (doc.id === userData.email) isAdmin = true;
-      });
-      res.status(200).send({ ...userData, isAdmin });
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        res.status(200).send({ ...userData, isAdmin: false });
+      } else {
+        res.status(200).send({ isAdmin: true });
+      }
     } catch (err) {
       res.status(404).send({
         message: 'Not found',
