@@ -1,4 +1,4 @@
-import { firestore } from 'lib/firebase';
+import { firestore, functions } from 'lib/firebase';
 import { cors } from 'lib/middleware';
 import {
   doc,
@@ -9,7 +9,9 @@ import {
   collection,
   getDocs,
   where,
+  setDoc,
 } from 'firebase/firestore';
+import { httpsCallable } from 'firebase/functions';
 
 export default async function handler(req, res) {
   await cors(req, res);
@@ -42,8 +44,8 @@ export default async function handler(req, res) {
         branch,
         phone,
         college,
-        hasPaid: false,
         referral_code: referralCode,
+        hasPaid: false,
         isEntry: false,
         isLunch: false,
         emailSent: false,
@@ -73,7 +75,7 @@ export default async function handler(req, res) {
   }
 
   if (req.method == 'PUT') {
-    const { username, hasPaid, referralCode, paymentId } = req.body;
+    const { username, referralCode, paymentId } = req.body;
     const parsedRC = parseInt(referralCode, 10);
     const registrationDoc = doc(firestore, 'registrations', username);
     const usersQuery = query(
@@ -82,10 +84,14 @@ export default async function handler(req, res) {
     );
     const batch = writeBatch(firestore);
     try {
-      // Email sent after updating
+      const regSnapshot = await getDoc(registrationDoc);
+      if (!regSnapshot.exists()) {
+        console.log('No such document exists');
+        return;
+      }
       batch.update(registrationDoc, {
         referral_code: parsedRC,
-        hasPaid,
+        hasPaid: true,
         paymentLink: `https://dashboard.razorpay.com/app/payments/${paymentId}`,
         updatedAt: serverTimestamp(),
       });
@@ -99,6 +105,22 @@ export default async function handler(req, res) {
           batch.update(userDoc, { registrations });
         }
       });
+      const regData = regSnapshot.data();
+      // Email sent on calling the firebase function
+      const sendEmail = httpsCallable(functions, 'sendEmailForRegistration');
+      sendEmail({
+        docId: username,
+        fullName: regData.fullName,
+        email: regData.email,
+      })
+        .then(async res => {
+          console.log(res.data);
+          await setDoc(registrationDoc, { emailSent: true }, { merge: true });
+          console.log('Email sent successfully');
+        })
+        .catch(err => {
+          console.log(err.message, err.code);
+        });
     } catch (err) {
       res.status(400).send({
         message: 'Bad Request',
