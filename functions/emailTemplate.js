@@ -39,7 +39,7 @@ module.exports = function renderHtml({ fullName, qr }) {
                             Your ticket for the trailblazer has been confirmed!!
                             "The more you celebrate life,the more comes to celebrate in life".
                             Celebrate the grand gala on <b> 20 May, 2022</b> at main auditorium and have a memorable day!!
-                            And <span style="font-size:20px;font-weight:600;color:#00C0FF;">don't forget to show this unique QR code</span> generated exclusively for you at the auditorium entrance and at the snacks and food counters on that day!!</p>
+                            <span style="font-size:20px;font-weight:600;color:#00C0FF;">Don't forget to show this unique QR code</span> generated exclusively for you at the auditorium entrance and at the snacks and food counters on that day!!</p>
                         </td>
                       </tr>
                             </table>

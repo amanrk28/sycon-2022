@@ -18,11 +18,13 @@ import {
 } from 'constants/register';
 import { sanitizeData, generate4DigitNumber, loadScript } from 'utils/util';
 import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
+import Modal from 'components/Modal';
 
 const textFieldSx = { width: 400 };
 
 export default function Register() {
   const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [payloadData, setPayloadData] = useState({
     fullName: '',
     email: '',
@@ -74,8 +76,8 @@ export default function Register() {
     const res = await loadScript(
       'https://checkout.razorpay.com/v1/checkout.js'
     );
-
     if (!res) {
+      setIsModalOpen(false);
       alert('Razorpay SDK failed to load. Are you online?');
       return;
     }
@@ -117,6 +119,7 @@ export default function Register() {
         }
       },
     };
+    setIsModalOpen(false);
     const paymentObject = new window.Razorpay(options);
     paymentObject.on('payment.failed', res => {
       toast.error(res.error.description);
@@ -126,12 +129,11 @@ export default function Register() {
 
   const onSubmit = async (event, paymentMode) => {
     event.preventDefault();
+    setIsModalOpen(true);
     const { data, errors } = sanitizeData(payloadData);
-    if (paymentMode === 'offline-payment') {
-      delete data.referralCode;
-    }
     setError(errors);
     if (Object.values(errors).includes(true)) {
+      setIsModalOpen(false);
       toast.error('Fill all fields to continue');
       return;
     } else {
@@ -140,6 +142,9 @@ export default function Register() {
         data.fullName.substring(0, 15).toLowerCase().replace(/\s/g, '_') +
         generate4DigitNumber();
       setSs(ssKeys.firebaseRegUserRef, username);
+      if (paymentMode === 'offline-payment') {
+        data.referralCode = 0;
+      }
       await axios({
         baseURL: window.location.origin,
         method: 'POST',
@@ -148,7 +153,10 @@ export default function Register() {
       });
     }
     if (paymentMode === 'online-payment') displayRazorPay(data);
-    else router.push('/registration_success');
+    else {
+      setIsModalOpen(false);
+      router.push('/registration_success');
+    }
   };
 
   return (
@@ -157,7 +165,7 @@ export default function Register() {
         title="SYCon2022 - Creating Leaders and Inspiring Change"
         description="Creating Leaders and Inspiring Change"
       />
-
+      <Modal isOpen={isModalOpen} />
       <div className="register-container">
         <div className="cover-container">
           <div className="top">

@@ -10,16 +10,18 @@ export default async function handler(req, res) {
   }
 
   if (req.method === 'POST') {
-    const { uid, email, fullName, phone } = req.body;
+    const { uid, email, fullName, phone, branch, year } = req.body;
 
     const userDoc = doc(firestore, 'users', uid);
 
     try {
-      let userDocData = {
+      const userDocData = {
         email: email,
         fullName: fullName,
         phone: phone,
         referral_code: generateNumber(),
+        branch,
+        year: parseInt(year, 10),
         registrations: 0,
       };
       await setDoc(userDoc, userDocData);

@@ -10,10 +10,12 @@ import { useAuth } from 'lib/AuthProvider';
 import { loginPayload, signupPayload, authFields } from 'constants/auth';
 import PageHead from 'components/PageHead';
 import { sanitizeAuthData } from 'utils/util';
+import Modal from 'components/Modal';
 
 export default function Auth() {
-  const [authType, setAuthType] = useState('login');
+  const [authType, setAuthType] = useState('signup');
   const [state, setState] = useState(loginPayload);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const { login, signup, addUserDetail, currentUser } = useAuth();
   useEffect(() => {
@@ -39,11 +41,13 @@ export default function Auth() {
 
   const redirectUser = useCallback(
     ({ uid }) => {
+      setIsModalOpen(true);
       axios({
         baseUrl: window.location.origin,
         method: 'GET',
         url: `/api/user?uid=${uid}`,
       }).then(res => {
+        setIsModalOpen(false);
         if (res.data.isAdmin) {
           router.push('/event_head');
         } else {
@@ -76,6 +80,7 @@ export default function Auth() {
       toast.error('Enter a valid year of study');
       return;
     }
+    setIsModalOpen(true);
     const { user } = await signup(state.email, state.password);
     if (user) {
       let userData = {
@@ -83,6 +88,8 @@ export default function Auth() {
         email: state['email'],
         fullName: state['full_name'],
         phone: state['phone_number'],
+        branch: state['branch'],
+        year: state['year'],
       };
       await sendEmailVerification(user);
       toast.success('Verification email sent!');
@@ -108,9 +115,8 @@ export default function Auth() {
   const loginUser = async () => {
     let toastId;
     try {
-      toastId = toast.loading('Signing in...');
+      setIsModalOpen(true);
       const { user } = await login(state.email, state.password);
-      toast.dismiss(toastId);
       toast.success('Welcome Back!');
       if (user) {
         redirectUser({ uid: user.uid });
@@ -141,6 +147,7 @@ export default function Auth() {
         title="Login/Signup to view your referrals"
         description="Login/Signup to view your referrals"
       />
+      <Modal isOpen={isModalOpen} />
       <div className="auth-container">
         <div className="auth-wrapper">
           <div className="logo-container">
