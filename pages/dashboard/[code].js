@@ -49,6 +49,9 @@ export default function Dashboard({
         <section className="organizer-body">
           <div className="referrals-container">
             <div className="amount-summary">
+              <div className="referral-code">
+                Referral Code: <span>{router.query.code}</span>
+              </div>
               {amountSummary.map(item => (
                 <div className={item.id} key={item.id}>
                   <h3>

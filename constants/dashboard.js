@@ -30,7 +30,7 @@ const lbColumns = [
 ];
 
 const amountSummary = [
-  { id: 'cash', label: 'Cash (offline collection)' },
+  { id: 'cash', label: 'Offline collection' },
   { id: 'online', label: 'Online Collection' },
 ];
 export { referralColumns, lbColumns, amountSummary };
