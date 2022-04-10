@@ -113,7 +113,6 @@ export default function Auth() {
   };
 
   const loginUser = async () => {
-    let toastId;
     try {
       setIsModalOpen(true);
       const { user } = await login(state.email, state.password);
@@ -122,6 +121,7 @@ export default function Auth() {
         redirectUser({ uid: user.uid });
       }
     } catch (err) {
+      setIsModalOpen(false);
       if (err.code === 'auth/user-not-found') {
         toast.error('Email not found! Did you mean to sign up?');
       } else if (err.code === 'auth/wrong-password') {
@@ -131,7 +131,6 @@ export default function Auth() {
       } else {
         toast.error('An unexpected error has occurred. ☠️');
       }
-      toast.dismiss(toastId);
     }
   };
 
