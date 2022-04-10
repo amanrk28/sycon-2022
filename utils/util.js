@@ -5,6 +5,10 @@ const emailValidation = emailString => {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
 };
+
+const ssnDomain = 'ssn.edu.in';
+const snuDomain = 'snuchennai.edu.in';
+
 export const sanitizeData = data => {
   let errors = {
     fullName: false,
@@ -23,8 +27,12 @@ export const sanitizeData = data => {
     data.fullName = x.join(' ');
   } else errors.fullName = true;
   // Validate email
-  if (data.email) {
-    errors.email = !emailValidation(data.email);
+  if (data.email && emailValidation(data.email)) {
+    if (
+      !data.email.toLowerCase().includes(ssnDomain) &&
+      !data.email.toLowerCase().includes(snuDomain)
+    )
+      errors.email = true;
   } else errors.email = true;
   // Validate phone
   if (data.phone) {
@@ -33,7 +41,7 @@ export const sanitizeData = data => {
   } else errors.phone = true;
   // Validate year
   if (data.year) {
-    const test = data.year.match(/^[1-5]$/);
+    const test = data.year.match(/^[1-4]$/);
     errors.year = !test;
   } else errors.year = true;
 
@@ -68,8 +76,6 @@ export const loadScript = src => {
   });
 };
 
-const ssnDomain = 'ssn.edu.in';
-const snuDomain = 'snuchennai.edu.in';
 export const sanitizeAuthData = data => {
   let errors = {
     email: false,

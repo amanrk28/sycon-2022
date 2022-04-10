@@ -134,7 +134,9 @@ export default function Register() {
     setError(errors);
     if (Object.values(errors).includes(true)) {
       setIsModalOpen(false);
-      toast.error('Fill all fields to continue');
+      if (errors.email) toast.error('Enter your college email ID to continue');
+      else if (errors.phone) toast.error('Enter a valid Phone Number');
+      else toast.error('Fill all fields to continue');
       return;
     } else {
       setPayloadData(data);
