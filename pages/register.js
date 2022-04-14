@@ -144,9 +144,6 @@ export default function Register() {
         data.fullName.substring(0, 15).toLowerCase().replace(/\s/g, '_') +
         generate4DigitNumber();
       setSs(ssKeys.firebaseRegUserRef, username);
-      if (paymentMode === 'offline-payment') {
-        data.referralCode = 0;
-      }
       await axios({
         baseURL: window.location.origin,
         method: 'POST',
