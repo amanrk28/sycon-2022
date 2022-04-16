@@ -29,7 +29,7 @@ export default function Success() {
       <div style={ContainerBoxSx}>
         <div style={WrapperboxSx}>
           <Image src="/logo.svg" alt="SYCon 2022" width={254} height={106} />
-          <h1 style={{ textAlign: 'center' }}>Your payment was received ✅</h1>
+          <h1 style={{ textAlign: 'center' }}>🎉 Registration Successful 🎉</h1>
           <p style={{ textAlign: 'center', fontSize: 18, fontWeight: 500 }}>
             You will soon receive an email with the QR code for event day.
             <br />

@@ -33,11 +33,11 @@
     }
     .top{
       h1 {
-        font-size: 32px;
+        font-size: 22px;
         font-weight: 600;
         margin: 32px 0;
         background-color: rgba(256,256,256,0.08);
-        backdrop-filter: blur(32px);
+        backdrop-filter: blur(20px);
         padding: 21px 38px;
         border-radius: 72px;
         width: fit-content;
@@ -105,6 +105,7 @@
       }
     }
     h3 {
+      font-size: 24px;
       font-weight: 500;
     }
     .input-fields {

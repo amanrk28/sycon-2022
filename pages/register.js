@@ -183,7 +183,7 @@ export default function Register() {
             <h1>SYCon Ticketing</h1>
             <h3>Creating leaders & Inspiring change</h3>
           </div>
-          <div className="sponsor-container">
+          {/* <div className="sponsor-container">
             <div>
               <p>Title Sponsor</p>
               <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
@@ -196,7 +196,7 @@ export default function Register() {
                 <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <div className="register-form">
           <h3>Student Registration</h3>

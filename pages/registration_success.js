@@ -29,11 +29,11 @@ export default function RegistrationSuccess() {
       <div style={ContainerBoxSx}>
         <div style={WrapperboxSx}>
           <Image src="/logo.svg" alt="SYCon 2022" width={254} height={106} />
-          <h1 style={{ textAlign: 'center' }}>Registration successful ✅</h1>
+          <h1 style={{ textAlign: 'center' }}>🎉 Registration Successful 🎉</h1>
           <p style={{ textAlign: 'center', fontSize: 20, fontWeight: 500 }}>
-            Just provide your register number and make the payment on the event
-            day and you&apos;ll receive an email confirming your seat for SYCon
-            2k22.
+            An organising committee member will approach you within 3 days to
+            confirm the payment. You will receive an email confirming your seat
+            at Sycon &apos;22 after completing the payment.
           </p>
           <p style={{ fontSize: 20, marginTop: 20, fontWeight: 500 }}>
             See you on {process.env.NEXT_PUBLIC_EVENT_DATE}😃
