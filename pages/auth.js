@@ -13,7 +13,7 @@ import { sanitizeAuthData } from 'utils/util';
 import Modal from 'components/Modal';
 
 export default function Auth() {
-  const [authType, setAuthType] = useState('signup');
+  const [authType, setAuthType] = useState('login');
   const [state, setState] = useState(loginPayload);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
@@ -173,7 +173,10 @@ export default function Auth() {
           >
             {authType === 'signup' ? 'Signup' : 'Login'}
           </Button>
-          <p>
+          {/*
+          ---------------Enable this for SIGNUP------------------
+          */}
+          {/* <p>
             {authType === 'signup'
               ? 'Already have an account?'
               : "Don't have an account yet?"}
@@ -181,7 +184,7 @@ export default function Auth() {
             <span onClick={toggleAuth}>
               {authType === 'signup' ? 'Login' : 'Signup'}
             </span>
-          </p>
+          </p> */}
         </div>
       </div>
     </>

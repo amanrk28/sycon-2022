@@ -12,10 +12,12 @@ export default function Dropdown({
   anchor,
   error,
   list,
+  sx = {},
 }) {
   return (
     <>
       <TextField
+        sx={sx}
         value={value}
         label={label}
         id={`${id}-button`}
@@ -33,6 +35,11 @@ export default function Dropdown({
         open={open}
         onClose={e => handleClose(e, id)}
         MenuListProps={{ 'aria-labelledby': 'degree-button' }}
+        PaperProps={{
+          style: {
+            maxHeight: 300,
+          },
+        }}
       >
         {list.length > 0 &&
           list.map(item => (

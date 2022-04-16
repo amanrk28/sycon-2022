@@ -21,12 +21,6 @@ const inputFields = [
     type: 'dropdown',
     props: {},
   },
-  {
-    id: 'referralCode',
-    label: 'Referral Code',
-    type: 'text',
-    props: { maxLength: 4, ...numericProps },
-  },
 ];
 
 const ssnBranchNames = [

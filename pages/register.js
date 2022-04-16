@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Fragment, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import axios from 'axios';
@@ -19,8 +19,11 @@ import {
 import { sanitizeData, generate4DigitNumber, loadScript } from 'utils/util';
 import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
 import Modal from 'components/Modal';
+import content from '../users.json';
 
 const textFieldSx = { width: 400 };
+
+const rcList = content.users.map(x => `${x.fullName} - ${x.referral_code}`);
 
 export default function Register() {
   const router = useRouter();
@@ -51,19 +54,27 @@ export default function Register() {
     degree: null,
     branch: null,
     college: null,
+    referralCode: null,
   });
   const openVar = {
     openDegree: Boolean(anchorEl.degree),
     openBranch: Boolean(anchorEl.branch),
     openCollege: Boolean(anchorEl.college),
+    openReferralCode: Boolean(anchorEl.referralCode),
   };
   const handleClick = (event, id) => {
     setAnchorEl({ ...anchorEl, [id]: event.currentTarget });
   };
 
   const handleClose = (e, id) => {
-    const value = e.target.getAttribute('name');
-    if (value) setPayloadData({ ...payloadData, [id]: value });
+    let value = e.target.getAttribute('name');
+    if (value) {
+      if (id === 'referralCode') {
+        value = parseInt(value.slice(-4), 10);
+        console.log(value);
+      }
+      setPayloadData({ ...payloadData, [id]: value });
+    }
     setAnchorEl({ ...anchorEl, [id]: null });
   };
 
@@ -192,55 +203,71 @@ export default function Register() {
           <div className="input-fields">
             {inputFields.map(field => {
               return field.id === 'dropdown-inputs' ? (
-                <div className="dropdown-input" key={field.id}>
-                  <div className="input-container">
-                    <Dropdown
-                      id="college"
-                      value={payloadData.college}
-                      label="College"
-                      open={openVar.openCollege}
-                      handleClick={handleClick}
-                      handleClose={handleClose}
-                      anchor={anchorEl.college}
-                      error={error.college}
-                      list={collegeNames}
-                    />
+                <Fragment key={field.id}>
+                  <div className="dropdown-input">
+                    <div className="input-container">
+                      <Dropdown
+                        id="college"
+                        value={payloadData.college}
+                        label="College"
+                        open={openVar.openCollege}
+                        handleClick={handleClick}
+                        handleClose={handleClose}
+                        anchor={anchorEl.college}
+                        error={error.college}
+                        list={collegeNames}
+                      />
+                    </div>
+                    <div className="input-container">
+                      <Dropdown
+                        id="degree"
+                        value={payloadData.degree}
+                        label="Degree"
+                        open={openVar.openDegree}
+                        handleClick={handleClick}
+                        handleClose={handleClose}
+                        anchor={anchorEl.degree}
+                        error={error.degree}
+                        list={
+                          payloadData.college === 'SSN'
+                            ? ssnDegreeNames
+                            : snuDegreeNames
+                        }
+                      />
+                    </div>
+                    <div className="input-container">
+                      <Dropdown
+                        id="branch"
+                        value={payloadData.branch}
+                        label="Branch"
+                        open={openVar.openBranch}
+                        handleClick={handleClick}
+                        handleClose={handleClose}
+                        anchor={anchorEl.branch}
+                        error={error.branch}
+                        list={
+                          payloadData.college === 'SSN'
+                            ? ssnBranchNames
+                            : snuBranchNames
+                        }
+                      />
+                    </div>
                   </div>
                   <div className="input-container">
                     <Dropdown
-                      id="degree"
-                      value={payloadData.degree}
-                      label="Degree"
-                      open={openVar.openDegree}
+                      sx={{ width: 400 }}
+                      id="referralCode"
+                      value={payloadData.referralCode}
+                      label="Referral Code"
+                      open={openVar.openReferralCode}
                       handleClick={handleClick}
                       handleClose={handleClose}
-                      anchor={anchorEl.degree}
-                      error={error.degree}
-                      list={
-                        payloadData.college === 'SSN'
-                          ? ssnDegreeNames
-                          : snuDegreeNames
-                      }
+                      anchor={anchorEl.referralCode}
+                      error={error.referralCode}
+                      list={rcList}
                     />
                   </div>
-                  <div className="input-container">
-                    <Dropdown
-                      id="branch"
-                      value={payloadData.branch}
-                      label="Branch"
-                      open={openVar.openBranch}
-                      handleClick={handleClick}
-                      handleClose={handleClose}
-                      anchor={anchorEl.branch}
-                      error={error.branch}
-                      list={
-                        payloadData.college === 'SSN'
-                          ? ssnBranchNames
-                          : snuBranchNames
-                      }
-                    />
-                  </div>
-                </div>
+                </Fragment>
               ) : (
                 <div className="input-container" key={field.id}>
                   <TextField

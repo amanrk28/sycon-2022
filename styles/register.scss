@@ -114,8 +114,9 @@
       width: 100%;
       .input-container {
         margin: 14px 0;
+        width: 100%;
+        max-width: 400px;
         @include phone {
-          max-width: 400px;
           width: 100%;
         }
       }
