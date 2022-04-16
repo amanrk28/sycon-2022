@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import Tooltip from '@mui/material/Tooltip';
+import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import { useAuth } from 'lib/AuthProvider';
 import PageHead from 'components/PageHead';
 import {
@@ -11,10 +12,11 @@ import {
   BarElement,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import Doughnut from 'components/Doughnut';
-import Card from 'components/Card';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import { firestore } from 'lib/firebase';
+
+const Doughnut = dynamic(() => import('components/Doughnut'));
+const Card = dynamic(() => import('components/Card'));
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ChartTooltip);
 
@@ -47,6 +49,22 @@ const barData = {
 export default function EventHead({ users }) {
   const { currentUser, logout } = useAuth();
   const [search, setSearch] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!currentUser) router.push('/auth');
+  });
+
+  const onChange = e => {
+    const { value } = e.target;
+    const newUsers = users.filter(x =>
+      x.name.toLowerCase().includes(value.toLowerCase())
+    );
+    setSearch(value);
+    setFilteredUsers(newUsers);
+  };
+
   return (
     <>
       <PageHead
@@ -56,11 +74,9 @@ export default function EventHead({ users }) {
       <div className="eventhead-container">
         <nav className="eventhead-header">
           <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
-          <Tooltip title="Logout" onClick={logout}>
-            <div className="user">
-              {currentUser?.displayName?.split(' ').map(x => x[0]) || '12'}
-            </div>
-          </Tooltip>
+          <div className="user">
+            {currentUser?.displayName?.split(' ').map(x => x[0]) || '12'}
+          </div>
         </nav>
         <div className="eventhead-body">
           <div className="overall-stats">
@@ -80,13 +96,15 @@ export default function EventHead({ users }) {
                 type="text"
                 placeholder="Search..."
                 value={search}
-                onChange={e => setSearch(e.target.value)}
+                onChange={onChange}
               />
             </div>
             <div className="stats">
-              {users.map(user => (
-                <Card key={user.online} data={user} />
-              ))}
+              {filteredUsers.length > 0
+                ? filteredUsers.map(user => (
+                    <Card key={user.name} data={user} />
+                  ))
+                : users.map(user => <Card key={user.name} data={user} />)}
             </div>
           </div>
         </div>
@@ -108,7 +126,6 @@ export const getServerSideProps = async ({ res }) => {
   usersQuerySnapshot.docs;
   for (const userDoc of usersQuerySnapshot.docs) {
     const userData = userDoc.data();
-    console.log(userData);
     let x = { name: userData.fullName, cash: 0, online: 0 };
     const registrationsSnapshot = await getDocs(
       query(

@@ -1,12 +1,12 @@
 import React, { Fragment, useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import PageHead from 'components/PageHead';
-import Dropdown from 'components/Dropdown';
 import {
   inputFields,
   checkoutButtons,
@@ -18,10 +18,10 @@ import {
 } from 'constants/register';
 import { sanitizeData, generate4DigitNumber, loadScript } from 'utils/util';
 import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
-import Modal from 'components/Modal';
 import content from '../users.json';
 
-const textFieldSx = { width: 400 };
+const Dropdown = dynamic(() => import('components/Dropdown'));
+const Modal = dynamic(() => import('components/Modal'));
 
 const rcList = content.users.map(x => `${x.fullName} - ${x.referral_code}`);
 
@@ -175,7 +175,7 @@ export default function Register() {
         title="SYCon2022 - Creating Leaders and Inspiring Change"
         description="Creating Leaders and Inspiring Change"
       />
-      <Modal isOpen={isModalOpen} />
+      {isModalOpen && <Modal isOpen={isModalOpen} />}
       <div className="register-container">
         <div className="cover-container">
           <div className="top">
@@ -271,7 +271,7 @@ export default function Register() {
               ) : (
                 <div className="input-container" key={field.id}>
                   <TextField
-                    sx={textFieldSx}
+                    sx={{ width: 400 }}
                     value={payloadData[field.id]}
                     type={field.type}
                     label={field.label}

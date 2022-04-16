@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import axios from 'axios';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -8,9 +9,10 @@ import toast from 'react-hot-toast';
 import { sendEmailVerification } from 'firebase/auth';
 import { useAuth } from 'lib/AuthProvider';
 import { loginPayload, signupPayload, authFields } from 'constants/auth';
-import PageHead from 'components/PageHead';
 import { sanitizeAuthData } from 'utils/util';
-import Modal from 'components/Modal';
+
+const PageHead = dynamic(() => import('components/PageHead'));
+const Modal = dynamic(() => import('components/Modal'));
 
 export default function Auth() {
   const [authType, setAuthType] = useState('login');
@@ -146,7 +148,7 @@ export default function Auth() {
         title="Login/Signup to view your referrals"
         description="Login/Signup to view your referrals"
       />
-      <Modal isOpen={isModalOpen} />
+      {isModalOpen && <Modal isOpen={isModalOpen} />}
       <div className="auth-container">
         <div className="auth-wrapper">
           <div className="logo-container">

@@ -8,19 +8,20 @@ import 'styles/eventhead.scss';
 import 'styles/doughnut.scss';
 import 'styles/card.scss';
 
-const toastOptions = {
-  duration: 4000,
-  style: {
-    background: '#333333',
-    color: '#FFFFFF',
-  },
-};
-
 function SyconApp({ Component, pageProps }) {
   return (
     <AuthProvider>
       <Component {...pageProps} />
-      <Toaster position="top-center" toastOptions={toastOptions} />
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: '#333333',
+            color: '#FFFFFF',
+          },
+        }}
+      />
     </AuthProvider>
   );
 }

@@ -11,13 +11,21 @@ const legend = [
 
 export default function Card({ data }) {
   const pieData = {
-    labels: ['Cash', 'Online Money'],
+    labels: ['Cash', 'Online Money', 'None'],
     datasets: [
       {
-        label: ['Cash', 'Online Money'],
-        data: [data.cash, data.online],
-        backgroundColor: ['rgba(0, 192, 255, 1)', 'rgba(255, 216, 0, 1)'],
-        borderColor: ['rgba(0, 192, 255, 1)', 'rgba(255, 216, 0, 1)'],
+        label: ['Cash', 'Online Money', 'None'],
+        data: [data.cash, data.online, 0.0001],
+        backgroundColor: [
+          'rgba(0, 192, 255, 1)',
+          'rgba(255, 216, 0, 1)',
+          '#ccc',
+        ],
+        borderColor: [
+          'rgba(0, 192, 255, 1)',
+          'rgba(255, 216, 0, 1)',
+          'rgba(255, 216, 0, 1)',
+        ],
         borderWidth: 1,
       },
     ],
