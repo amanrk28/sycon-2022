@@ -33,6 +33,7 @@ export const sanitizeData = data => {
       !data.email.toLowerCase().includes(snuDomain)
     )
       errors.email = true;
+    else data.email = data.email.trim();
   } else errors.email = true;
   // Validate phone
   if (data.phone) {
@@ -49,6 +50,7 @@ export const sanitizeData = data => {
   if (!data.degree) errors.degree = true;
   if (!data.college) errors.college = true;
   if (!data.registerNumber) errors.registerNumber = true;
+  else data.registerNumber = data.registerNumber.trim();
   if (data.referralCode) {
     const x = parseInt(data.referralCode, 10);
     errors.referralCode = !(Number.isInteger(x) && x >= 1000 && x <= 9999);
