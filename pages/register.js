@@ -6,6 +6,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import PageHead from 'components/PageHead';
 import {
   inputFields,
@@ -19,11 +20,29 @@ import {
 import { sanitizeData, generate4DigitNumber, loadScript } from 'utils/util';
 import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
 import content from '../users.json';
+import { firestore } from 'lib/firebase';
 
 const Dropdown = dynamic(() => import('components/Dropdown'));
 const Modal = dynamic(() => import('components/Modal'));
 
 const rcList = content.users.map(x => `${x.fullName} - ${x.referral_code}`);
+
+async function checkIfUserExists(regNo) {
+  try {
+    const q = query(
+      collection(firestore, 'registrations'),
+      where('registerNumber', '==', regNo)
+    );
+    const existingReg = await getDocs(q);
+    if (!existingReg.empty) {
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.log(err);
+    return;
+  }
+}
 
 export default function Register() {
   const router = useRouter();
@@ -71,7 +90,6 @@ export default function Register() {
     if (value) {
       if (id === 'referralCode') {
         value = parseInt(value.slice(-4), 10);
-        console.log(value);
       }
       setPayloadData({ ...payloadData, [id]: value });
     }
@@ -154,18 +172,25 @@ export default function Register() {
       const username =
         data.fullName.substring(0, 15).toLowerCase().replace(/\s/g, '_') +
         generate4DigitNumber();
-      setSs(ssKeys.firebaseRegUserRef, username);
-      await axios({
-        baseURL: window.location.origin,
-        method: 'POST',
-        url: '/api/registration',
-        data: { ...data, username },
-      });
-    }
-    if (paymentMode === 'online-payment') displayRazorPay(data);
-    else {
-      setIsModalOpen(false);
-      router.push('/registration_success');
+      const doesExist = await checkIfUserExists(data.registerNumber);
+      if (doesExist) {
+        toast.error('Registration already done. Cannot register again');
+        setIsModalOpen(false);
+        return;
+      } else {
+        setSs(ssKeys.firebaseRegUserRef, username);
+        await axios({
+          baseURL: window.location.origin,
+          method: 'POST',
+          url: '/api/registration',
+          data: { ...data, username },
+        });
+        if (paymentMode === 'online-payment') displayRazorPay(data);
+        else {
+          setIsModalOpen(false);
+          router.push('/registration_success');
+        }
+      }
     }
   };
 
