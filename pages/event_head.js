@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { useAuth } from 'lib/AuthProvider';
+import Tooltip from '@mui/material/Tooltip';
 import PageHead from 'components/PageHead';
 import {
   Chart as ChartJS,
@@ -31,11 +32,11 @@ const options = {
   },
 };
 
-const barData = {
+const barData = yearData => ({
   labels: ['1st Year', '2nd Year', '3rd Year', '4th Year'],
   datasets: [
     {
-      data: [10, 20, 30, 10],
+      data: yearData,
       backgroundColor: [
         'rgba(0, 192, 255, 1)',
         'rgba(255, 216, 0, 1)',
@@ -44,9 +45,9 @@ const barData = {
       ],
     },
   ],
-};
+});
 
-export default function EventHead({ users }) {
+export default function EventHead({ users, ticketsSold, yearData }) {
   const { currentUser, logout } = useAuth();
   const [search, setSearch] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -74,18 +75,20 @@ export default function EventHead({ users }) {
       <div className="eventhead-container">
         <nav className="eventhead-header">
           <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
-          <div className="user">
-            {currentUser?.displayName?.split(' ').map(x => x[0]) || '12'}
-          </div>
+          <Tooltip title="Logout" onClick={logout}>
+            <div className="user">
+              {currentUser?.displayName.split(' ').map(x => x[0])}
+            </div>
+          </Tooltip>
         </nav>
         <div className="eventhead-body">
           <div className="overall-stats">
             <h3>Overall Statistics</h3>
             <div className="data">
-              <Doughnut ticketsSold={100} />
+              <Doughnut ticketsSold={ticketsSold} />
               <div className="tickets-sold">
                 <h3>Tickets Sold</h3>
-                <Bar data={barData} options={options} />
+                <Bar data={barData(yearData)} options={options} />
               </div>
             </div>
           </div>
@@ -123,7 +126,8 @@ export const getServerSideProps = async ({ res }) => {
     query(collection(firestore, 'users'), orderBy('registrations', 'desc'))
   );
   let users = [];
-  usersQuerySnapshot.docs;
+  let ticketsSold = 0;
+  let yearData = [0, 0, 0, 0];
   for (const userDoc of usersQuerySnapshot.docs) {
     const userData = userDoc.data();
     let x = { name: userData.fullName, cash: 0, online: 0 };
@@ -134,16 +138,21 @@ export const getServerSideProps = async ({ res }) => {
         where('referral_code', '==', userData.referral_code)
       )
     );
+    ticketsSold += registrationsSnapshot.size;
     registrationsSnapshot.forEach(regDoc => {
       const regData = regDoc.data();
       if (regData.paymentLink) x.online += 200;
       else x.cash += 200;
+      const year = parseInt(regData.year);
+      yearData[year - 1] += 1;
     });
     users.push(x);
   }
   return {
     props: {
       users,
+      ticketsSold,
+      yearData,
     },
   };
 };
