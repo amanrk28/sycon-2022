@@ -38,6 +38,7 @@ export default function Dropdown({
         PaperProps={{
           style: {
             maxHeight: 300,
+            width: 320,
           },
         }}
       >

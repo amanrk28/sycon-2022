@@ -10,12 +10,6 @@ const inputFields = [
     props: { maxLength: 10, ...numericProps },
   },
   {
-    id: 'year',
-    label: 'Year',
-    type: 'text',
-    props: { maxLength: 1, ...numericProps },
-  },
-  {
     id: 'dropdown-inputs',
     label: 'Dropdown Inputs',
     type: 'dropdown',

@@ -26,6 +26,7 @@ const Dropdown = dynamic(() => import('components/Dropdown'));
 const Modal = dynamic(() => import('components/Modal'));
 
 const rcList = content.users.map(x => `${x.fullName} - ${x.referral_code}`);
+const yearList = ['1', '2', '3', '4'];
 
 async function checkIfUserExists(regNo) {
   try {
@@ -74,12 +75,14 @@ export default function Register() {
     branch: null,
     college: null,
     referralCode: null,
+    year: null,
   });
   const openVar = {
     openDegree: Boolean(anchorEl.degree),
     openBranch: Boolean(anchorEl.branch),
     openCollege: Boolean(anchorEl.college),
     openReferralCode: Boolean(anchorEl.referralCode),
+    openYear: Boolean(anchorEl.year),
   };
   const handleClick = (event, id) => {
     setAnchorEl({ ...anchorEl, [id]: event.currentTarget });
@@ -229,6 +232,20 @@ export default function Register() {
             {inputFields.map(field => {
               return field.id === 'dropdown-inputs' ? (
                 <Fragment key={field.id}>
+                  <div className="input-container">
+                    <Dropdown
+                      sx={{ width: 400 }}
+                      id="year"
+                      value={payloadData.year}
+                      label="Year"
+                      open={openVar.openYear}
+                      handleClick={handleClick}
+                      handleClose={handleClose}
+                      anchor={anchorEl.year}
+                      error={error.year}
+                      list={yearList}
+                    />
+                  </div>
                   <div className="dropdown-input">
                     <div className="input-container">
                       <Dropdown

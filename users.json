@@ -1,256 +1,70 @@
 {
-    "users": [
-      {
-        "fullName": "Abhinaya Ravichandran",
-        "referral_code": "1261"
-      },
-      {
-        "fullName": "Aditya Varun",
-        "referral_code": "8616"
-      },
-      {
-        "fullName": "Agilan M A",
-        "referral_code": "2891"
-      },
-      {
-        "fullName": "Akshaj Varma Penmetcha",
-        "referral_code": "9802"
-      },
-      {
-        "fullName": "Aniruth Sridhar S",
-        "referral_code": "3963"
-      },
-      {
-        "fullName": "Anusharaj S",
-        "referral_code": "1354"
-      },
-      {
-        "fullName": "Arini. R. S. M",
-        "referral_code": "4672"
-      },
-      {
-        "fullName": "Ashwath Suresh",
-        "referral_code": "7773"
-      },
-      {
-        "fullName": "Ashwini Ramesh Kumar",
-        "referral_code": "9168"
-      },
-      {
-        "fullName": "Aswathy Rajesh",
-        "referral_code": "9414"
-      },
-      {
-        "fullName": "B.Aishwarya",
-        "referral_code": "1675"
-      },
-      {
-        "fullName": "Chunduri suhasini ",
-        "referral_code": "6018"
-      },
-      {
-        "fullName": "Deepesh",
-        "referral_code": "3630"
-      },
-      {
-        "fullName": "Dinesh S",
-        "referral_code": "6019"
-      },
-      {
-        "fullName": "Dineshkumar A",
-        "referral_code": "2979"
-      },
-      {
-        "fullName": "Geofrin Lanso L S",
-        "referral_code": "4743"
-      },
-      {
-        "fullName": "Giridharan SY",
-        "referral_code": "8029"
-      },
-      {
-        "fullName": "Hareesh Balaji N S",
-        "referral_code": "3757"
-      },
-      {
-        "fullName": "Harish Kumar",
-        "referral_code": "6631"
-      },
-      {
-        "fullName": "Harish N",
-        "referral_code": "1707"
-      },
-      {
-        "fullName": "Harish Sridhar",
-        "referral_code": "9272"
-      },
-      {
-        "fullName": "Harvind M P",
-        "referral_code": "1327"
-      },
-      {
-        "fullName": "Hevanthika M",
-        "referral_code": "3255"
-      },
-      {
-        "fullName": "INDUJA.M.C ",
-        "referral_code": "4042"
-      },
-      {
-        "fullName": "Indhumathi R",
-        "referral_code": "2363"
-      },
-      {
-        "fullName": "Jessica Pragalathan",
-        "referral_code": "4442"
-      },
-      {
-        "fullName": "Jiitesh S",
-        "referral_code": "6295"
-      },
-      {
-        "fullName": "K.B.Krithiukha ",
-        "referral_code": "8834"
-      },
-      {
-        "fullName": "KRISHNAPRIYAA M M ",
-        "referral_code": "8785"
-      },
-      {
-        "fullName": "Keshava Muralidhar",
-        "referral_code": "5862"
-      },
-      {
-        "fullName": "Kilwish Nighjo A",
-        "referral_code": "2101"
-      },
-      {
-        "fullName": "Kovi Sai Sandeep",
-        "referral_code": "3233"
-      },
-      {
-        "fullName": "Krisha Aarunee S ",
-        "referral_code": "1380"
-      },
-      {
-        "fullName": "Lakshmi Priya A",
-        "referral_code": "2128"
-      },
-      {
-        "fullName": "Likhitha Tejaswini ",
-        "referral_code": "6862"
-      },
-      {
-        "fullName": "Mahalakshmi M",
-        "referral_code": "3887"
-      },
-      {
-        "fullName": "Mohamed Fardeen",
-        "referral_code": "3985"
-      },
-      {
-        "fullName": "Mohammed javid jafir. N",
-        "referral_code": "2685"
-      },
-      {
-        "fullName": "Mothi mukesh K",
-        "referral_code": "4630"
-      },
-      {
-        "fullName": "Nalin Natarajan",
-        "referral_code": "1162"
-      },
-      {
-        "fullName": "Naveen Raj",
-        "referral_code": "2802"
-      },
-      {
-        "fullName": "Nitish kanna ",
-        "referral_code": "9090"
-      },
-      {
-        "fullName": "Pragdeesh B",
-        "referral_code": "1776"
-      },
-      {
-        "fullName": "Pranav Aadhithya K.B",
-        "referral_code": "2658"
-      },
-      {
-        "fullName": "Pranav Adwaith SS",
-        "referral_code": "5198"
-      },
-      {
-        "fullName": "R.Sowmya",
-        "referral_code": "7817"
-      },
-      {
-        "fullName": "Rahil Singhi",
-        "referral_code": "1857"
-      },
-      {
-        "fullName": "SRISAILAKSHMI",
-        "referral_code": "3951"
-      },
-      {
-        "fullName": "Saivignesh C",
-        "referral_code": "5693"
-      },
-      {
-        "fullName": "Sarvesh Karthikeyan S",
-        "referral_code": "6507"
-      },
-      {
-        "fullName": "Shantini C",
-        "referral_code": "9559"
-      },
-      {
-        "fullName": "Smrithi Mahalakshmi S",
-        "referral_code": "1441"
-      },
-      {
-        "fullName": "Subikshwar.k",
-        "referral_code": "7257"
-      },
-      {
-        "fullName": "Suneeth Damodharan",
-        "referral_code": "6366"
-      },
-      {
-        "fullName": "Supraja M",
-        "referral_code": "4755"
-      },
-      {
-        "fullName": "Test OC",
-        "referral_code": "9692"
-      },
-      {
-        "fullName": "Thanush kumar",
-        "referral_code": "9616"
-      },
-      {
-        "fullName": "Tharunika T M",
-        "referral_code": "7767"
-      },
-      {
-        "fullName": "Thrisha",
-        "referral_code": "9853"
-      },
-      {
-        "fullName": "V PRAVEEN SUBRAMANYAM",
-        "referral_code": "6275"
-      },
-      {
-        "fullName": "V. S. Kavya",
-        "referral_code": "7582"
-      },
-      {
-        "fullName": "Varsha B",
-        "referral_code": "5562"
-      },
-      {
-        "fullName": "Vishal Surya ",
-        "referral_code": "1842"
-      }
-    ]
-  }
+  "users": [
+    { "fullName": "Abhinaya Ravichandran", "referral_code": "1261" },
+    { "fullName": "Aditya R", "referral_code": "6669" },
+    { "fullName": "Aditya Varun", "referral_code": "8616" },
+    { "fullName": "Agilan M A", "referral_code": "2891" },
+    { "fullName": "Akshaj Varma Penmetcha", "referral_code": "9802" },
+    { "fullName": "Aniruth Sridhar S", "referral_code": "3963" },
+    { "fullName": "Anusharaj S", "referral_code": "1354" },
+    { "fullName": "Arini. R. S. M", "referral_code": "4672" },
+    { "fullName": "Arushi Sahu", "referral_code": "3103" },
+    { "fullName": "Ashwath Suresh", "referral_code": "7773" },
+    { "fullName": "Ashwini Ramesh Kumar", "referral_code": "9168" },
+    { "fullName": "Aswathy Rajesh", "referral_code": "9414" },
+    { "fullName": "B.Aishwarya", "referral_code": "1675" },
+    { "fullName": "Chunduri suhasini ", "referral_code": "6018" },
+    { "fullName": "Deepesh", "referral_code": "3630" },
+    { "fullName": "Dinesh S", "referral_code": "6019" },
+    { "fullName": "Dineshkumar A", "referral_code": "2979" },
+    { "fullName": "Geofrin Lanso L S", "referral_code": "4743" },
+    { "fullName": "Giridharan SY", "referral_code": "8029" },
+    { "fullName": "Hareesh Balaji N S", "referral_code": "3757" },
+    { "fullName": "Harish Kumar", "referral_code": "6631" },
+    { "fullName": "Harish N", "referral_code": "1707" },
+    { "fullName": "Harish Sridhar", "referral_code": "9272" },
+    { "fullName": "Harvind M P", "referral_code": "1327" },
+    { "fullName": "Hevanthika M", "referral_code": "3255" },
+    { "fullName": "INDUJA.M.C ", "referral_code": "4042" },
+    { "fullName": "Indhumathi R", "referral_code": "2363" },
+    { "fullName": "Jessica Pragalathan", "referral_code": "4442" },
+    { "fullName": "Jiitesh S", "referral_code": "6295" },
+    { "fullName": "K.B.Krithiukha ", "referral_code": "8834" },
+    { "fullName": "KRISHNAPRIYAA M M ", "referral_code": "8785" },
+    { "fullName": "Keshava Muralidhar", "referral_code": "5862" },
+    { "fullName": "Kilwish Nighjo A", "referral_code": "2101" },
+    { "fullName": "Kovi Sai Sandeep", "referral_code": "3233" },
+    { "fullName": "Krisha Aarunee S ", "referral_code": "1380" },
+    { "fullName": "Lakshmi Priya A", "referral_code": "2128" },
+    { "fullName": "Likhitha Tejaswini ", "referral_code": "6862" },
+    { "fullName": "Mahalakshmi M", "referral_code": "3887" },
+    { "fullName": "Mithila V", "referral_code": "4770" },
+    { "fullName": "Mohamed Fardeen", "referral_code": "3985" },
+    { "fullName": "Mohammed javid jafir. N", "referral_code": "2685" },
+    { "fullName": "Mothi mukesh K", "referral_code": "4630" },
+    { "fullName": "Nalin Natarajan", "referral_code": "1162" },
+    { "fullName": "Naveen Raj", "referral_code": "2802" },
+    { "fullName": "Nitish kanna", "referral_code": "9090" },
+    { "fullName": "Pragdeesh B", "referral_code": "1776" },
+    { "fullName": "Pranav Aadhithya K.B", "referral_code": "2658" },
+    { "fullName": "Pranav Adwaith SS", "referral_code": "5198" },
+    { "fullName": "R.Sowmya", "referral_code": "7817" },
+    { "fullName": "Rahil Singhi", "referral_code": "1857" },
+    { "fullName": "Rushikaa", "referral_code": "1234" },
+    { "fullName": "SRISAILAKSHMI", "referral_code": "3951" },
+    { "fullName": "Saivignesh C", "referral_code": "5693" },
+    { "fullName": "Sarvesh Karthikeyan S", "referral_code": "6507" },
+    { "fullName": "Shantini C", "referral_code": "9559" },
+    { "fullName": "Smrithi Mahalakshmi S", "referral_code": "1441" },
+    { "fullName": "Subikshwar.k", "referral_code": "7257" },
+    { "fullName": "Suneeth Damodharan", "referral_code": "6366" },
+    { "fullName": "Supraja M", "referral_code": "4755" },
+    { "fullName": "Thanush kumar", "referral_code": "9616" },
+    { "fullName": "Tharunika T M", "referral_code": "7767" },
+    { "fullName": "Thrisha", "referral_code": "9853" },
+    { "fullName": "V PRAVEEN SUBRAMANYAM", "referral_code": "6275" },
+    { "fullName": "V. S. Kavya", "referral_code": "7582" },
+    { "fullName": "Varsha B", "referral_code": "5562" },
+    { "fullName": "Vishal Surya ", "referral_code": "1842" }
+  ]
+}
