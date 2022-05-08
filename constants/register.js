@@ -27,9 +27,21 @@ const ssnBranchNames = [
   'Civil',
   'Chemical',
 ];
+const mastersBranchNames = [
+  'Communication Systems',
+  'Computer Science & Engineering',
+  'Applied Electronics',
+  'Power Electronics & Drives',
+  'VLSI Design',
+  'Energy Engineering',
+  'Manufacturing Engineering',
+  'Medical Electronics',
+  'Information Technology',
+  'Environmental Science & Technology',
+];
 const snuBranchNames = ['IoT', 'AI & DS', 'General/Hons', 'PA'];
 
-const ssnDegreeNames = ['B.Tech', 'B.E.'];
+const ssnDegreeNames = ['B.Tech', 'B.E.', 'M.E', 'M.Tech'];
 const snuDegreeNames = ['B.Tech', 'B.Com'];
 
 const collegeNames = ['SSN', 'SNU'];
@@ -47,4 +59,5 @@ export {
   ssnBranchNames,
   ssnDegreeNames,
   collegeNames,
+  mastersBranchNames,
 };

@@ -16,6 +16,7 @@ import {
   ssnBranchNames,
   ssnDegreeNames,
   collegeNames,
+  mastersBranchNames,
 } from 'constants/register';
 import { sanitizeData, generate4DigitNumber, loadScript } from 'utils/util';
 import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
@@ -171,6 +172,14 @@ export default function Register() {
       else toast.error('Fill all fields to continue');
       return;
     } else {
+      if (
+        ['M.E', 'M.Tech'].includes(data.degree) &&
+        !['1', '2'].includes(data.year)
+      ) {
+        setIsModalOpen(false);
+        toast.error('Year must 1 or 2 for Masters Degree');
+        return;
+      }
       setPayloadData(data);
       const username =
         data.fullName.substring(0, 15).toLowerCase().replace(/\s/g, '_') +
@@ -289,7 +298,9 @@ export default function Register() {
                         error={error.branch}
                         list={
                           payloadData.college === 'SSN'
-                            ? ssnBranchNames
+                            ? ['M.E', 'M.Tech'].includes(payloadData.degree)
+                              ? mastersBranchNames
+                              : ssnBranchNames
                             : snuBranchNames
                         }
                       />
