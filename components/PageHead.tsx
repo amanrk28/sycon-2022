@@ -1,6 +1,11 @@
 import Head from 'next/head';
 
-export default function PageHead({ title, description }) {
+interface Props {
+  title: string;
+  description: string;
+}
+
+export default function PageHead({ title, description }: Props) {
   return (
     <Head>
       <title>{title}</title>

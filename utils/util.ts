@@ -1,4 +1,6 @@
-const emailValidation = emailString => {
+import { PayloadData } from 'components/RegistrationForm';
+
+const emailValidation = (emailString: string) => {
   return String(emailString)
     .toLowerCase()
     .match(
@@ -9,62 +11,30 @@ const emailValidation = emailString => {
 const ssnDomain = 'ssn.edu.in';
 const snuDomain = 'snuchennai.edu.in';
 
-export const sanitizeData = data => {
-  let errors = {
-    fullName: false,
-    email: false,
-    registerNumber: false,
-    phone: false,
-    year: false,
-    degree: false,
-    branch: false,
-    referralCode: false,
-  };
+export const sanitizeData = (data: PayloadData) => {
   // Validate Full Name
   if (data.fullName) {
     let x = data.fullName.split(' ');
-    x = x.map(item => item[0].toUpperCase() + item.substr(1));
+    x = x.map((item: string) => item[0].toUpperCase() + item.substr(1));
     data.fullName = x.join(' ');
-  } else errors.fullName = true;
+  }
   // Validate email
   if (data.email && emailValidation(data.email)) {
     if (
       !data.email.toLowerCase().includes(ssnDomain) &&
       !data.email.toLowerCase().includes(snuDomain)
     )
-      errors.email = true;
+      data.email = data.email.trim();
     else data.email = data.email.trim();
-  } else errors.email = true;
-  // Validate phone
-  if (data.phone) {
-    const test = data.phone.match(/^\d{10}$/);
-    errors.phone = !test;
-  } else errors.phone = true;
-  // Validate year
-  if (data.year) {
-    const test = data.year.match(/^[1-4]$/);
-    errors.year = !test;
-  } else errors.year = true;
-
-  if (!data.branch) errors.branch = true;
-  if (!data.degree) errors.degree = true;
-  if (!data.college) errors.college = true;
-  if (!data.registerNumber) errors.registerNumber = true;
-  else data.registerNumber = data.registerNumber.trim();
-  if (data.referralCode) {
-    const x = parseInt(data.referralCode, 10);
-    errors.referralCode = !(Number.isInteger(x) && x >= 1000 && x <= 9999);
-    data.referralCode = x;
-  } else errors.referralCode = true;
-
-  return { data, errors };
+  }
+  return { data };
 };
 
 export const generate4DigitNumber = () => {
   return Math.floor(Math.random() * 10000) + 1;
 };
 
-export const loadScript = src => {
+export const loadScript = (src: string) => {
   return new Promise(resolve => {
     const script = document.createElement('script');
     script.src = src;

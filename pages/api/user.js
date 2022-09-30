@@ -1,6 +1,6 @@
 import { firestore } from 'lib/firebase';
 import { cors } from 'lib/middleware';
-import { doc, getDoc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export default async function handler(req, res) {
   await cors(req, res);
