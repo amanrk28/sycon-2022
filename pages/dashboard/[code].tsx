@@ -102,6 +102,8 @@ const Dashboard: NextPage<DashboardProps> = ({
       router.push('/auth');
   }, [currentUser, router]);
 
+  if (!currentUser) return null;
+
   return (
     <>
       <PageHead
