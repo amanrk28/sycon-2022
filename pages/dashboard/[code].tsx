@@ -7,26 +7,33 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 import { firestore } from 'lib/firebase';
 import { useAuth } from 'lib/AuthProvider';
-import { AmountSummary, LeaderBoard, Referrals, ReferralsColumn, LeaderboardColumn, PaymentType } from 'components/dashboard';
+import {
+  AmountSummary,
+  LeaderBoard,
+  Referrals,
+  ReferralsColumn,
+  LeaderboardColumn,
+  PaymentType,
+} from 'components/dashboard';
 import PageHead from 'components/PageHead';
 
 const Container = styled.div`
- display: flex;
+  display: flex;
   flex-direction: column;
   width: 100%;
 `;
 
 const Body = styled.div`
-    background-color: #eee;
-    padding: 2% 5%;
-    height: 88vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    overflow-y: scroll;
-    @media screen and (max-width: 1024px) {
-      flex-direction: column;
-    }
+  background-color: #eee;
+  padding: 2% 5%;
+  height: 88vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  overflow-y: scroll;
+  @media screen and (max-width: 1024px) {
+    flex-direction: column;
+  }
 `;
 
 const ReferralsContainer = styled.div`
@@ -60,24 +67,30 @@ const NavBar = styled.nav`
 `;
 
 const UserBox = styled.div`
-    background-color: #00c0ff;
-    color: white;
-    font-size: 18px;
-    font-weight: 500;
-    padding: 10px;
-    border-radius: 4px;
-    cursor: pointer;
+  background-color: #00c0ff;
+  color: white;
+  font-size: 18px;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
 `;
 
 interface DashboardProps {
-  amountCollected: PaymentType,
-  referrals: ReferralsColumn[],
-  leaderboard: LeaderboardColumn[],
-  referralSize: number,
-  highlighted: number,
+  amountCollected: PaymentType;
+  referrals: ReferralsColumn[];
+  leaderboard: LeaderboardColumn[];
+  referralSize: number;
+  highlighted: number;
 }
 
-const Dashboard: NextPage<DashboardProps> = ({ amountCollected, referralSize, referrals, leaderboard, highlighted }) => {
+const Dashboard: NextPage<DashboardProps> = ({
+  amountCollected,
+  referralSize,
+  referrals,
+  leaderboard,
+  highlighted,
+}) => {
   const { currentUser, logout } = useAuth();
   const router = useRouter();
   useEffect(() => {
@@ -87,7 +100,6 @@ const Dashboard: NextPage<DashboardProps> = ({ amountCollected, referralSize, re
       router.query.code === 'undefined'
     )
       router.push('/auth');
-
   }, [currentUser, router]);
 
   return (
@@ -100,7 +112,8 @@ const Dashboard: NextPage<DashboardProps> = ({ amountCollected, referralSize, re
         <NavBar>
           <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
           <p>
-            Referral Code: <Typography.Text copyable>{router.query.code}</Typography.Text>
+            Referral Code:
+            <Typography.Text copyable>{router.query.code}</Typography.Text>
           </p>
           <Tooltip title="Logout">
             <UserBox onClick={logout}>
@@ -110,7 +123,10 @@ const Dashboard: NextPage<DashboardProps> = ({ amountCollected, referralSize, re
         </NavBar>
         <Body>
           <ReferralsContainer>
-            <AmountSummary amountCollected={amountCollected} code={router.query.code as string} />
+            <AmountSummary
+              amountCollected={amountCollected}
+              code={router.query.code as string}
+            />
             <Referrals referralSize={referralSize} referrals={referrals} />
           </ReferralsContainer>
           <LeaderBoard data={leaderboard} highlighted={highlighted} />
@@ -118,9 +134,12 @@ const Dashboard: NextPage<DashboardProps> = ({ amountCollected, referralSize, re
       </Container>
     </>
   );
-}
+};
 
-export const getServerSideProps: GetServerSideProps = async ({ res, query: ctxQuery }) => {
+export const getServerSideProps: GetServerSideProps = async ({
+  res,
+  query: ctxQuery,
+}) => {
   if (!ctxQuery.code || ctxQuery.code === 'undefined') {
     res.statusCode = 302;
     res.setHeader('Location', '/auth');
