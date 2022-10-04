@@ -6,7 +6,7 @@ const inputFields = [
     id: 'phone',
     label: 'Phone Number',
     type: 'number',
-    maxLength: 10,
+    max: 10,
   },
 ];
 
@@ -16,7 +16,7 @@ export enum SsnBranch {
   Ece = 'ECE',
   Eee = 'EEE',
   Mechanical = 'Mechanical',
-  Bme  ='BME',
+  Bme = 'BME',
   Civil = 'Civil',
   Chemical = 'Chemical',
 }
@@ -30,7 +30,7 @@ const ssnBranchNames = [
   'BME',
   'Civil',
   'Chemical',
-].map(x => ({ key: x, label: x }));
+].map(x => ({ key: x, label: x, value: x }));
 
 const mastersBranchNames = [
   'Communication Systems',
@@ -43,10 +43,11 @@ const mastersBranchNames = [
   'Medical Electronics',
   'Information Technology',
   'Environmental Science & Technology',
-].map(x => ({ key: x, label: x }));
+].map(x => ({ key: x, label: x, value: x }));
 const snuBranchNames = ['IoT', 'AI & DS', 'General/Hons', 'PA'].map(x => ({
   key: x,
   label: x,
+  value: x,
 }));
 
 export enum MastersDegree {
@@ -69,8 +70,13 @@ export type Degree = BachelorsDegree | MastersDegree | SnuDegree;
 const ssnDegreeNames = ['B.Tech', 'B.E.', 'M.E', 'M.Tech'].map(x => ({
   key: x,
   label: x,
+  value: x,
 }));
-const snuDegreeNames = ['B.Tech', 'B.Com'].map(x => ({ key: x, label: x }));
+const snuDegreeNames = ['B.Tech', 'B.Com'].map(x => ({
+  key: x,
+  label: x,
+  value: x,
+}));
 
 export enum College {
   Ssn = 'SSN',
@@ -78,11 +84,15 @@ export enum College {
 }
 
 const collegeNames = [
-  { key: 'SSN', label: 'SSN' },
-  { key: 'SNU', label: 'SNU' },
+  { key: 'SSN', label: 'SSN', value: 'SSN' },
+  { key: 'SNU', label: 'SNU', value: 'SNU' },
 ];
 
-const yearList = ['1', '2', '3', '4'].map(x => ({ key: x, label: x }));
+const yearList = ['1', '2', '3', '4'].map(x => ({
+  key: x,
+  label: x,
+  value: x,
+}));
 
 export {
   inputFields,
@@ -94,8 +104,3 @@ export {
   mastersBranchNames,
   yearList,
 };
-
-export enum PaymentMode {
-  Online = 'online-payment',
-  Offline = 'offline-payment'
-}

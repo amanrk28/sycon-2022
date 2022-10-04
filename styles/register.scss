@@ -4,33 +4,6 @@
   }
 }
 
-.top {
-  h1 {
-    font-size: 22px;
-    font-weight: 600;
-    margin: 32px 0;
-    background-color: rgba(256, 256, 256, 0.08);
-    backdrop-filter: blur(20px);
-    padding: 21px 38px;
-    border-radius: 72px;
-    width: fit-content;
-    @include phone {
-      font-size: 24px;
-      margin: 16px 0;
-      width: 100%;
-      border-radius: 72px;
-    }
-  }
-  h3 {
-    font-size: 72px;
-    font-weight: 700;
-    max-width: 668px;
-    margin: 0;
-    @include phone {
-      font-size: 32px;
-    }
-  }
-}
 .sponsor-container {
   padding: 13px 35px;
   background-color: rgba(256, 256, 256, 0.08);

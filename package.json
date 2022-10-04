@@ -18,7 +18,6 @@
     "firebase": "^9.6.10",
     "firebase-tools": "^10.5.0",
     "next": "^12.3.1",
-    "razorpay": "^2.8.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^4.0.1",
     "react-dom": "^18.2.0",
@@ -29,6 +28,7 @@
     "uuidv4": "^6.2.12"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.12",
     "@types/node": "^18.7.23",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",

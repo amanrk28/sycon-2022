@@ -1,6 +1,6 @@
-import Cors from 'cors';
+import Cors, { CorsRequest } from 'cors';
 
-export const cors = (req, res, methods) => {
+export const cors = (req: CorsRequest, res, methods: string | string[]) => {
   const cors = Cors({
     methods: methods || ['GET', 'POST', 'PUT', 'DELETE'],
   });

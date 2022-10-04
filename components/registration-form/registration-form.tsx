@@ -1,6 +1,5 @@
-import { Button, Input } from 'antd';
+import { Button } from 'antd';
 import axios from 'axios';
-import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useRouter } from 'next/router';
 import { FC, useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
@@ -17,54 +16,31 @@ import {
   yearList,
   College,
   MastersDegree,
-  PaymentMode,
-} from '../constants/register';
-import { Dropdown } from './dropdown';
-import { Form } from './Form';
-import content from '../users.json';
+} from 'constants/register';
+import { Dropdown } from 'components/dropdown';
+import { Form, FormItem } from 'components/Form';
+import { Input } from 'components/Input';
+import { Title } from 'components/title';
 import { sanitizeData, generate4DigitNumber } from 'utils/util';
 import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
-import { firestore } from 'lib/firebase';
+import {
+  PayloadData,
+  RazorpaySuccesshandlerArgs,
+  Fields,
+  PaymentMode,
+} from './types';
+import {
+  checkIfUserExists,
+  dropdownRules,
+  inputValidator,
+  rcList,
+} from './constants';
 
 interface Props {
   setModal: (value: boolean) => void;
 }
-interface RazorpaySuccesshandlerArgs {
-  razorpay_signature: string;
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-}
 
-export interface PayloadData {
-  fullName: string;
-  email: string;
-  registerNumber: string;
-  phone: string;
-  year: string;
-  college: string;
-  degree: string;
-  branch: string;
-  referralCode: string;
-}
-
-async function checkIfUserExists(regNo: string) {
-  try {
-    const q = query(
-      collection(firestore, 'registrations'),
-      where('registerNumber', '==', regNo)
-    );
-    const existingReg = await getDocs(q);
-    if (!existingReg.empty) {
-      return true;
-    }
-    return false;
-  } catch (err) {
-    console.log(err);
-    return;
-  }
-}
-
-const InputContainer = styled(Form.Item)`
+const InputContainer = styled(FormItem)`
   margin: 14px 0;
   width: 100%;
   max-width: 400px;
@@ -106,13 +82,6 @@ const SubmitContainer = styled.div`
     }
   }
 `;
-
-const rcList = content.users.map(x => ({
-  key: x.referral_code,
-  label: `${x.fullName} - ${x.referral_code}`,
-}));
-
-const dropdownRules = [{ required: true }];
 
 export const RegistrationForm: FC<Props> = ({ setModal }) => {
   const router = useRouter();
@@ -225,10 +194,9 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
       onFinish={(values: any) => {
         console.log(values);
         setPayloadData({ ...payloadData, ...values });
-        onSubmit(PaymentMode.Offline);
       }}
     >
-      <h3>Student Registration</h3>
+      <Title level={3}>Student Registration</Title>
       {inputFields.map(field => (
         <InputContainer
           key={field.id}
@@ -238,42 +206,27 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
             {
               required: true,
               min: 3,
-              len: field.maxLength,
-            },
-            {
-              validator: (_, value) => {
-                if (field.id === 'phone') {
-                  if (value.match(/^\d{10}$/)) return Promise.resolve();
-                  return Promise.reject(
-                    new Error('Enter a valid phone number')
-                  );
-                }
-                return Promise.resolve();
-              },
+              len: field.max,
+              validator: inputValidator(field.id),
             },
           ]}
           hasFeedback
         >
           <Input
             id={field.id}
-            addonBefore={field.id === 'phone' ? '+91' : ''}
+            addonBefore={field.id === Fields.Phone ? '+91' : ''}
             size="large"
-            placeholder={field.label}
             type={field.type}
           />
         </InputContainer>
       ))}
       <DropdownInput>
-        <InputContainer
-          name="year"
-          label={<div>Year</div>}
-          rules={dropdownRules}
-        >
-          <Dropdown list={yearList} />
+        <InputContainer name="year" label={'Year'} rules={dropdownRules}>
+          <Dropdown options={yearList} />
         </InputContainer>
         <InputContainer
           name="college"
-          label={<div>College</div>}
+          label="College"
           rules={dropdownRules}
           shouldUpdate
         >
@@ -281,14 +234,14 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
             onSelect={(value: string) =>
               setPayloadData({ ...payloadData, college: value })
             }
-            list={collegeNames}
+            options={collegeNames}
           />
         </InputContainer>
       </DropdownInput>
       <DropdownInput>
         <InputContainer
           name="degree"
-          label={<div>Degree</div>}
+          label={'Degree'}
           rules={dropdownRules}
           shouldUpdate
         >
@@ -296,8 +249,8 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
             onSelect={(value: string) =>
               setPayloadData({ ...payloadData, degree: value })
             }
-            list={
-              form.getFieldValue('college') === College.Ssn
+            options={
+              form.getFieldValue(Fields.College) === College.Ssn
                 ? ssnDegreeNames
                 : snuDegreeNames
             }
@@ -305,16 +258,16 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
         </InputContainer>
         <InputContainer
           name="branch"
-          label={<div>Branch</div>}
+          label={'Branch'}
           rules={dropdownRules}
           shouldUpdate
         >
           <Dropdown
-            list={
-              form.getFieldValue('college') === College.Ssn
+            options={
+              form.getFieldValue(Fields.College) === College.Ssn
                 ? Object.values(MastersDegree).includes(
-                    form.getFieldValue('degree') as any
-                  )
+                  form.getFieldValue(Fields.Degree) as any
+                )
                   ? mastersBranchNames
                   : ssnBranchNames
                 : snuBranchNames
@@ -324,10 +277,10 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
       </DropdownInput>
       <InputContainer
         name="referralCode"
-        label={<div>Referral Code</div>}
+        label={'Referral Code'}
         rules={dropdownRules}
       >
-        <Dropdown list={rcList} />
+        <Dropdown options={rcList} />
       </InputContainer>
       <SubmitContainer>
         <InputContainer>

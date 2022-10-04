@@ -1,73 +1,20 @@
-import { PayloadData } from 'components/RegistrationForm';
+import { PayloadData } from 'components/registration-form';
 
-const emailValidation = (emailString: string) => {
-  return String(emailString)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-};
-
-const ssnDomain = 'ssn.edu.in';
-const snuDomain = 'snuchennai.edu.in';
+export const ssnDomain = 'ssn.edu.in';
+export const snuDomain = 'snuchennai.edu.in';
 
 export const sanitizeData = (data: PayloadData) => {
-  // Validate Full Name
+  // Format Full Name
   if (data.fullName) {
     let x = data.fullName.split(' ');
     x = x.map((item: string) => item[0].toUpperCase() + item.substr(1));
     data.fullName = x.join(' ');
   }
-  // Validate email
-  if (data.email && emailValidation(data.email)) {
-    if (
-      !data.email.toLowerCase().includes(ssnDomain) &&
-      !data.email.toLowerCase().includes(snuDomain)
-    )
-      data.email = data.email.trim();
-    else data.email = data.email.trim();
-  }
+  // Format email
+  if (data.email) data.email = data.email.trim();
   return { data };
 };
 
 export const generate4DigitNumber = () => {
   return Math.floor(Math.random() * 10000) + 1;
-};
-
-export const loadScript = (src: string) => {
-  return new Promise(resolve => {
-    const script = document.createElement('script');
-    script.src = src;
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      resolve(false);
-    };
-    document.body.appendChild(script);
-  });
-};
-
-export const sanitizeAuthData = data => {
-  let errors = {
-    email: false,
-    phone_number: false,
-    year: false,
-  };
-  if (data.email && emailValidation(data.email)) {
-    if (
-      !data.email.toLowerCase().includes(ssnDomain) &&
-      !data.email.toLowerCase().includes(snuDomain)
-    )
-      errors.email = true;
-  } else errors.email = true;
-  if (data.phone_number) {
-    const test = data.phone_number.match(/^\d{10}$/);
-    errors.phone_number = !test;
-  } else errors.phone_number = true;
-  if (data.year) {
-    const test = data.year.match(/^[1-4]$/);
-    errors.year = !test;
-  } else errors.year = true;
-  return { errors };
 };

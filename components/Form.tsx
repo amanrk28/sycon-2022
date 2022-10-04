@@ -17,3 +17,13 @@ export const Form = styled(AntForm)`
     width: 100%;
   }
 `;
+
+export const FormItem = styled(AntForm.Item)`
+  .ant-form-item-row {
+    flex-direction: column;
+    .ant-form-item-label {
+      font-size: 14px;
+      text-align: left;
+    }
+  }
+`;

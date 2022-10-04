@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import Image from 'next/image';
-import PageHead from 'components/PageHead';
 import { Modal } from 'antd';
-import { Loader } from '../components/Loader';
-import styled from 'styled-components';
-import { RegistrationForm } from '../components/RegistrationForm';
+import React, { useState } from 'react';
 import type { NextPage } from 'next';
+import styled from 'styled-components';
+import PageHead from 'components/PageHead';
+import { Loader } from 'components/Loader';
+import { RegistrationCover } from 'components/registration-cover';
+import { RegistrationForm } from 'components/registration-form';
 
 const RegisterContainer = styled.div`
   display: flex;
@@ -16,31 +16,8 @@ const RegisterContainer = styled.div`
   }
 `;
 
-const CoverContainer = styled.div`
-  height: 100vh;
-  max-height: 100vh;
-  max-width: 50vw;
-  width: 50vw;
-  background-image: url('/RegistrationCoverPic.png');
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  padding: 20px 83px;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  @media screen and (max-width: 900px) {
-    max-width: 100vw;
-    width: 100vw;
-    height: 50vh;
-    max-height: 50vh;
-    padding: 12px 40px;
-  }
-`;
-
 const Register: NextPage = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
   const setModal = (value: boolean) => setIsModalOpen(value);
 
   return (
@@ -56,27 +33,7 @@ const Register: NextPage = () => {
         modalRender={Loader}
       />
       <RegisterContainer>
-        <CoverContainer>
-          <div className="top">
-            <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
-            <h1>SYCon Ticketing</h1>
-            <h3>Creating leaders & Inspiring change</h3>
-          </div>
-          {/* <div className="sponsor-container">
-            <div>
-              <p>Title Sponsor</p>
-              <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
-            </div>
-            <div className="divider"></div>
-            <div>
-              <p>Official Sponsor</p>
-              <div className="sponsor-images">
-                <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
-                <Image src="/logo.svg" alt="SYCon" width={165} height={69} />
-              </div>
-            </div>
-          </div> */}
-        </CoverContainer>
+        <RegistrationCover />
         <RegistrationForm setModal={setModal} />
       </RegisterContainer>
     </>
