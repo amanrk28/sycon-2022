@@ -1,8 +1,12 @@
 import { firestore } from 'lib/firebase';
 import { cors } from 'lib/middleware';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   await cors(req, res);
 
   function generateNumber() {
@@ -41,7 +45,7 @@ export default async function handler(req, res) {
 
   if (req.method == 'GET') {
     const { uid } = req.query;
-    const userRef = doc(firestore, 'users', uid);
+    const userRef = doc(firestore, 'users', uid as string);
     try {
       const userDoc = await getDoc(userRef);
       if (userDoc.exists()) {
@@ -53,7 +57,7 @@ export default async function handler(req, res) {
     } catch (err) {
       res.status(404).send({
         message: 'Not found',
-        error: err.toString(),
+        error: err as Error,
       });
     }
   }

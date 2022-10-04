@@ -1,6 +1,6 @@
 module.exports = {
   parserOptions: {
-    ecmaVersion: 2021,
+    ecmaVersion: 2020,
     sourceType: 'module',
   },
   extends: ['next', 'next/core-web-vitals', 'plugin:prettier/recommended'],

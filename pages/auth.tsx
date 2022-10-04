@@ -75,7 +75,7 @@ const Auth: NextPage = () => {
       }).then(res => {
         setLoading(false);
         if (res.data.isAdmin) {
-          router.push('/event_head');
+          router.push('/organizer');
         } else {
           router.push(`/dashboard/${res.data.referral_code}`);
         }

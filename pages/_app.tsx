@@ -3,9 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import 'antd/dist/antd.css';
 import { AuthProvider } from 'lib/AuthProvider';
 import 'styles/globals.css';
-import 'styles/eventhead.scss';
 import 'styles/doughnut.scss';
-import 'styles/card.scss';
 import 'styles/antd.scss';
 
 function SyconApp({ Component, pageProps }: AppProps) {

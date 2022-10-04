@@ -1,6 +1,11 @@
 import Cors, { CorsRequest } from 'cors';
+import type { NextApiResponse } from 'next';
 
-export const cors = (req: CorsRequest, res, methods: string | string[]) => {
+export const cors = (
+  req: CorsRequest,
+  res: NextApiResponse,
+  methods?: string | string[]
+) => {
   const cors = Cors({
     methods: methods || ['GET', 'POST', 'PUT', 'DELETE'],
   });

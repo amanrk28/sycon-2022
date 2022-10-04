@@ -1,8 +1,12 @@
 import { cors } from 'lib/middleware';
+import type { NextApiRequest, NextApiResponse } from 'next';
 const { uuid } = require('uuidv4');
 const Razorpay = require('razorpay');
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   await cors(req, res);
   if (req.method == 'POST') {
     const razorpay = new Razorpay({

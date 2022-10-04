@@ -12,8 +12,12 @@ import {
   setDoc,
 } from 'firebase/firestore';
 import { httpsCallable } from 'firebase/functions';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async function handler(req, res) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   await cors(req, res);
 
   if (req.method === 'POST') {
@@ -68,7 +72,7 @@ export default async function handler(req, res) {
     } catch (err) {
       res.status(500).send({
         message: 'Server error',
-        error: err.toString(),
+        error: err as Error,
       });
       return;
     }
@@ -137,7 +141,7 @@ export default async function handler(req, res) {
     } catch (err) {
       res.status(500).send({
         message: 'Server error',
-        error: err.toString(),
+        error: err as Error,
       });
       return;
     }
@@ -145,16 +149,19 @@ export default async function handler(req, res) {
 
   if (req.method == 'GET') {
     const { username } = req.query;
-    const registrationRef = doc(firestore, 'registrations', username);
+    const registrationRef = doc(firestore, 'registrations', username as string);
     try {
-      const registrationData = (await getDoc(registrationRef)).data();
-      registrationData['updatedAt'] = registrationData['updatedAt'].seconds;
-      res.status(200).send({ ...registrationData });
+      const registrationDoc = await getDoc(registrationRef);
+      if (registrationDoc.exists()) {
+        const registrationData = registrationDoc.data();
+        registrationData['updatedAt'] = registrationData['updatedAt'].seconds;
+        res.status(200).send({ ...registrationData });
+      }
       //res.status(200).send(registrationData);
     } catch (err) {
       res.status(404).send({
         message: 'Not found',
-        error: err.toString(),
+        error: err as Error,
       });
     }
   }

@@ -12,3 +12,12 @@
 .ant-table-row.current-user-row {
   background: #f9db35;
 }
+
+@media screen and (max-width: 1023px) {
+  .ant-card-body {
+    flex-direction: column;
+  }
+  .ant-card-grid {
+    width: 100% !important;
+  }
+}
