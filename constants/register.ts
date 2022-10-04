@@ -1,3 +1,4 @@
+const arrFieldMap = (x: string) => ({ key: x, label: x, value: x });
 const inputFields = [
   { id: 'fullName', label: 'Full Name', type: 'text' },
   { id: 'email', label: 'College Email ID', type: 'email' },
@@ -30,7 +31,7 @@ const ssnBranchNames = [
   'BME',
   'Civil',
   'Chemical',
-].map(x => ({ key: x, label: x, value: x }));
+].map(arrFieldMap);
 
 const mastersBranchNames = [
   'Communication Systems',
@@ -43,12 +44,11 @@ const mastersBranchNames = [
   'Medical Electronics',
   'Information Technology',
   'Environmental Science & Technology',
-].map(x => ({ key: x, label: x, value: x }));
-const snuBranchNames = ['IoT', 'AI & DS', 'General/Hons', 'PA'].map(x => ({
-  key: x,
-  label: x,
-  value: x,
-}));
+].map(arrFieldMap);
+
+const snuBranchNames = ['IoT', 'AI & DS', 'General/Hons', 'PA'].map(
+  arrFieldMap
+);
 
 export enum MastersDegree {
   Me = 'M.E',
@@ -67,32 +67,17 @@ export enum SnuDegree {
 
 export type Degree = BachelorsDegree | MastersDegree | SnuDegree;
 
-const ssnDegreeNames = ['B.Tech', 'B.E.', 'M.E', 'M.Tech'].map(x => ({
-  key: x,
-  label: x,
-  value: x,
-}));
-const snuDegreeNames = ['B.Tech', 'B.Com'].map(x => ({
-  key: x,
-  label: x,
-  value: x,
-}));
+const ssnDegreeNames = ['B.Tech', 'B.E.', 'M.E', 'M.Tech'].map(arrFieldMap);
+const snuDegreeNames = ['B.Tech', 'B.Com'].map(arrFieldMap);
 
 export enum College {
   Ssn = 'SSN',
   Snu = 'SNU',
 }
 
-const collegeNames = [
-  { key: 'SSN', label: 'SSN', value: 'SSN' },
-  { key: 'SNU', label: 'SNU', value: 'SNU' },
-];
+const collegeNames = ['SSN', 'SNU'].map(arrFieldMap);
 
-const yearList = ['1', '2', '3', '4'].map(x => ({
-  key: x,
-  label: x,
-  value: x,
-}));
+const yearList = ['1', '2', '3', '4'].map(arrFieldMap);
 
 export {
   inputFields,
