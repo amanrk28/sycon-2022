@@ -11,7 +11,7 @@ const RegisterContainer = styled.div`
   display: flex;
   min-width: 100vw;
   max-width: 100vw;
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 768px) {
     flex-direction: column;
   }
 `;

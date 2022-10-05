@@ -1,3 +1,4 @@
+import { Routes } from 'components/types';
 import type { NextPage } from 'next';
 import { GetServerSideProps } from 'next';
 
@@ -13,6 +14,6 @@ export default Home;
 
 export const getServerSideProps: GetServerSideProps = async ({ res }) => {
   res.statusCode = 302;
-  res.setHeader('Location', '/register');
+  res.setHeader('Location', Routes.Registration);
   return { props: {} };
 };

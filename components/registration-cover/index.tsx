@@ -10,13 +10,14 @@ const CoverContainer = styled.div`
   width: 50vw;
   background-image: url('/RegistrationCoverPic.png');
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: cover;
+  /* background-size: 100% 100%; */
   padding: 20px 83px;
   color: #fff;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 768px) {
     max-width: 100vw;
     width: 100vw;
     height: 50vh;
@@ -31,6 +32,9 @@ const EventDesc = styled(Title)`
     color: white;
     max-width: 668px;
     margin: 32px 0;
+    @media screen and (max-width: 1024px) {
+      font-size: 56px;
+    }
     @media screen and (max-width: 900px) {
       font-size: 32px;
     }

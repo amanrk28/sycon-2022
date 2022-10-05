@@ -11,11 +11,9 @@ import {
   snuBranchNames,
   ssnBranchNames,
   yearList,
-} from 'constants/register';
-import {
   dropdownRules,
   inputValidator,
-} from 'components/registration-form/constants';
+} from 'components/registration-form';
 import { Dropdown } from 'components/dropdown';
 
 export const SignupForm = ({

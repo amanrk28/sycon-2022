@@ -12,7 +12,7 @@ export const Form = styled(AntForm)`
     font-size: 24px;
     font-weight: 500;
   }
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 768px) {
     margin: 0;
     width: 100%;
   }

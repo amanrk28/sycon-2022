@@ -5,7 +5,21 @@ import { FC, useCallback, useState } from 'react';
 import toast from 'react-hot-toast';
 import useRazorpay from 'react-razorpay';
 import styled from 'styled-components';
+import { ApiRoutes, Routes } from 'components/types';
+import { Dropdown } from 'components/dropdown';
+import { Form, FormItem } from 'components/Form';
+import { Input } from 'components/Input';
+import { Title } from 'components/title';
+import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
 import {
+  PayloadData,
+  RazorpaySuccesshandlerArgs,
+  Fields,
+  PaymentMode,
+} from './types';
+import {
+  dropdownRules,
+  rcList,
   inputFields,
   snuDegreeNames,
   ssnBranchNames,
@@ -16,25 +30,13 @@ import {
   yearList,
   College,
   MastersDegree,
-} from 'constants/register';
-import { Dropdown } from 'components/dropdown';
-import { Form, FormItem } from 'components/Form';
-import { Input } from 'components/Input';
-import { Title } from 'components/title';
-import { sanitizeData, generate4DigitNumber } from 'utils/util';
-import { setSs, ssKeys, getSs, clearSs } from 'utils/ssUtil';
-import {
-  PayloadData,
-  RazorpaySuccesshandlerArgs,
-  Fields,
-  PaymentMode,
-} from './types';
-import {
-  checkIfUserExists,
-  dropdownRules,
-  inputValidator,
-  rcList,
 } from './constants';
+import {
+  generateUsername,
+  checkIfUserExists,
+  inputValidator,
+  sanitizeData,
+} from './utils';
 
 interface Props {
   setModal: (value: boolean) => void;
@@ -44,9 +46,6 @@ const InputContainer = styled(FormItem)`
   margin: 14px 0;
   width: 100%;
   max-width: 400px;
-  @media screen and (max-width: 900px) {
-    width: 100%;
-  }
 `;
 
 const DropdownInput = styled.div`
@@ -76,10 +75,17 @@ const SubmitContainer = styled.div`
     max-width: 400px;
     flex-direction: column;
     width: 100%;
+    margin: 20px 0;
     button {
-      margin: 8px 0;
       width: 100%;
     }
+  }
+`;
+
+const SubmitFormItem = styled(FormItem)`
+  width: 48%;
+  @media screen and (max-width: 900px) {
+    width: 100%;
   }
 `;
 
@@ -97,13 +103,14 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
     branch: '',
     referralCode: '',
   });
+  const [paymentMode, setPaymentMode] = useState<PaymentMode | null>(null);
 
   const displayRazorPay = useCallback(
     async (userData: PayloadData) => {
       const razorpayData = await axios({
         baseURL: window.location.origin,
         method: 'POST',
-        url: '/api/razorpay',
+        url: ApiRoutes.Razorpay,
       });
 
       const options = {
@@ -124,7 +131,7 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
             await axios({
               baseURL: window.location.origin,
               method: 'PUT',
-              url: '/api/registration',
+              url: ApiRoutes.Registration,
               data: {
                 username,
                 referralCode: userData.referralCode,
@@ -133,7 +140,7 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
               },
             });
             clearSs();
-            router.push('/success');
+            router.push(Routes.PaymentSuccess);
           }
         },
       };
@@ -147,43 +154,38 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
     [Razorpay, router, setModal]
   );
 
-  const onSubmit = useCallback(
-    async (paymentMode: PaymentMode) => {
-      setModal(true);
-      const { data } = sanitizeData(payloadData);
-      if (
-        Object.values(MastersDegree).includes(data.degree as any) &&
-        !['1', '2'].includes(data.year)
-      ) {
-        setModal(false);
-        toast.error('Year must 1 or 2 for Masters Degree');
-        return;
-      }
-      setPayloadData(data);
-      const username =
-        data.fullName.substring(0, 15).toLowerCase().replace(/\s/g, '_') +
-        generate4DigitNumber();
-      const doesExist = await checkIfUserExists(data.registerNumber);
-      if (doesExist) {
-        toast.error('Registration already done. Cannot register again');
-        setModal(false);
-        return;
-      }
-      setSs(ssKeys.firebaseRegUserRef, username);
-      await axios({
-        baseURL: window.location.origin,
-        method: 'POST',
-        url: '/api/registration',
-        data: { ...data, username },
-      });
-      if (paymentMode === PaymentMode.Online) displayRazorPay(data);
-      else {
-        setModal(false);
-        router.push('/registration_success');
-      }
-    },
-    [displayRazorPay, payloadData, router, setModal]
-  );
+  const onSubmit = useCallback(async () => {
+    setModal(true);
+    const { data } = sanitizeData(payloadData);
+    if (
+      Object.values(MastersDegree).includes(data.degree as any) &&
+      !['1', '2'].includes(data.year)
+    ) {
+      setModal(false);
+      toast.error('Year must 1 or 2 for Masters Degree');
+      return;
+    }
+    setPayloadData(data);
+    const username = generateUsername(data.fullName);
+    const doesExist = await checkIfUserExists(data.registerNumber);
+    if (doesExist) {
+      toast.error('Registration already done. Cannot register again');
+      setModal(false);
+      return;
+    }
+    setSs(ssKeys.firebaseRegUserRef, username);
+    await axios({
+      baseURL: window.location.origin,
+      method: 'POST',
+      url: ApiRoutes.Registration,
+      data: { ...data, username },
+    });
+    if (paymentMode === PaymentMode.Online) displayRazorPay(data);
+    else {
+      setModal(false);
+      router.push(Routes.RegistrationSuccess);
+    }
+  }, [displayRazorPay, payloadData, paymentMode, router, setModal]);
 
   const [form] = Form.useForm();
 
@@ -192,8 +194,8 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
       colon={false}
       form={form}
       onFinish={(values: any) => {
-        console.log(values);
         setPayloadData({ ...payloadData, ...values });
+        onSubmit();
       }}
     >
       <Title level={3}>Student Registration</Title>
@@ -207,6 +209,8 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
               required: true,
               min: 3,
               len: field.max,
+            },
+            {
               validator: inputValidator(field.id),
             },
           ]}
@@ -283,16 +287,29 @@ export const RegistrationForm: FC<Props> = ({ setModal }) => {
         <Dropdown options={rcList} />
       </InputContainer>
       <SubmitContainer>
-        <InputContainer>
-          <Button type="primary" htmlType="submit" size="large">
+        <SubmitFormItem>
+          <Button
+            type="primary"
+            htmlType="submit"
+            size="large"
+            onClick={() => {
+              setPaymentMode(PaymentMode.Online);
+            }}
+          >
             Pay now
           </Button>
-        </InputContainer>
-        <InputContainer>
-          <Button htmlType="submit" size="large">
+        </SubmitFormItem>
+        <SubmitFormItem>
+          <Button
+            htmlType="submit"
+            size="large"
+            onClick={() => {
+              setPaymentMode(PaymentMode.Offline);
+            }}
+          >
             Pay later
           </Button>
-        </InputContainer>
+        </SubmitFormItem>
       </SubmitContainer>
     </Form>
   );

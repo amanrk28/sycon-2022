@@ -18,13 +18,29 @@ import {
 
 interface AuthContextInterface {
   currentUser: User | null;
-  login?: (email: string, password: string) => Promise<UserCredential>;
-  signup?: (email: string, password: string) => Promise<UserCredential>;
-  logout?: () => void;
-  addUserDetail?: (user: User, name: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<UserCredential>;
+  signup: (email: string, password: string) => Promise<UserCredential>;
+  logout: () => void;
+  addUserDetail: (user: User, name: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextInterface | null>(null);
+const ctxValues: AuthContextInterface = {
+  currentUser: null,
+  login: (email: string, password: string) => {
+    return signInWithEmailAndPassword(auth, email, password);
+  },
+  signup: (email: string, password: string) => {
+    return createUserWithEmailAndPassword(auth, email, password);
+  },
+  logout: () => {
+    return signOut(auth);
+  },
+  addUserDetail: (user: User, name: string) => {
+    return updateProfile(user, { displayName: name });
+  },
+};
+
+const AuthContext = createContext<AuthContextInterface | null>(ctxValues);
 
 export function useAuth() {
   const context = useContext(AuthContext);
@@ -41,22 +57,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  function signup(email: string, password: string) {
-    return createUserWithEmailAndPassword(auth, email, password);
-  }
-
-  function login(email: string, password: string) {
-    return signInWithEmailAndPassword(auth, email, password);
-  }
-
-  function logout() {
-    return signOut(auth);
-  }
-
-  function addUserDetail(user: User, name: string) {
-    return updateProfile(user, { displayName: name });
-  }
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, user => {
       setCurrentUser(user);
@@ -66,16 +66,8 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     return unsubscribe;
   }, []);
 
-  const value = {
-    currentUser,
-    login,
-    signup,
-    logout,
-    addUserDetail,
-  };
-
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ ...ctxValues, currentUser }}>
       {!loading && children}
     </AuthContext.Provider>
   );

@@ -16,6 +16,7 @@ import {
   PaymentType,
 } from 'components/dashboard';
 import PageHead from 'components/PageHead';
+import { Routes } from 'components/types';
 
 const Container = styled.div`
   display: flex;
@@ -99,7 +100,7 @@ const Dashboard: NextPage<DashboardProps> = ({
       !router.query?.code ||
       router.query.code === 'undefined'
     )
-      router.push('/auth');
+      router.push(Routes.Auth);
   }, [currentUser, router]);
 
   if (!currentUser) return null;
@@ -144,7 +145,7 @@ export const getServerSideProps: GetServerSideProps = async ({
 }) => {
   if (!ctxQuery.code || ctxQuery.code === 'undefined') {
     res.statusCode = 302;
-    res.setHeader('Location', '/auth');
+    res.setHeader('Location', Routes.Auth);
     return { props: {} };
   }
   const referralCode = parseInt(ctxQuery.code as string, 10);

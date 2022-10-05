@@ -1,3 +1,4 @@
+import { UserApiPayload } from 'components/types';
 import { firestore } from 'lib/firebase';
 import { cors } from 'lib/middleware';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
@@ -14,24 +15,22 @@ export default async function handler(
   }
 
   if (req.method === 'POST') {
-    const { uid, email, fullName, phone, branch, year } = req.body;
-
-    const userDoc = doc(firestore, 'users', uid);
+    const userDoc = doc(firestore, 'users', req.body.uid);
 
     try {
-      const userDocData = {
-        email: email,
-        fullName: fullName,
-        phone: phone,
+      const userDocData: UserApiPayload = {
+        email: req.body.email,
+        fullName: req.body.fullName,
+        phone: req.body.phone,
         referral_code: generateNumber(),
-        branch,
-        year: parseInt(year, 10),
+        branch: req.body.branch,
+        year: parseInt(req.body.year, 10),
         registrations: 0,
       };
       await setDoc(userDoc, userDocData);
       res.status(200).send({
         message: 'User created successfully',
-        fullName,
+        fullName: req.body.fullName,
         referralCode: userDocData.referral_code,
       });
     } catch (err) {

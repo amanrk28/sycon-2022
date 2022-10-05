@@ -1,3 +1,4 @@
+import { RegistrationApiPayload } from 'components/types';
 import { firestore, functions } from 'lib/firebase';
 import { cors } from 'lib/middleware';
 import {
@@ -21,40 +22,29 @@ export default async function handler(
   await cors(req, res);
 
   if (req.method === 'POST') {
-    const {
-      email,
-      fullName,
-      phone,
-      registerNumber,
-      year,
-      degree,
-      branch,
-      referralCode,
-      college,
-      username,
-    } = req.body;
-
-    const registrationDoc = doc(firestore, 'registrations', username);
+    const registrationDoc = doc(firestore, 'registrations', req.body.username);
 
     const batch = writeBatch(firestore);
 
+    const payload: RegistrationApiPayload = {
+      fullName: req.body.fullName,
+      email: req.body.email,
+      phone: req.body.phone,
+      registerNumber: req.body.registerNumber,
+      year: req.body.year,
+      degree: req.body.degree,
+      branch: req.body.branch,
+      college: req.body.college,
+      referral_code: req.body.referralCode,
+      hasPaid: false,
+      isEntry: false,
+      isLunch: false,
+      emailSent: false,
+      updatedAt: serverTimestamp(),
+    };
+
     try {
-      batch.set(registrationDoc, {
-        email,
-        fullName,
-        registerNumber,
-        year,
-        degree,
-        branch,
-        phone,
-        college,
-        referral_code: referralCode,
-        hasPaid: false,
-        isEntry: false,
-        isLunch: false,
-        emailSent: false,
-        updatedAt: serverTimestamp(),
-      });
+      batch.set(registrationDoc, payload);
     } catch (err) {
       res.status(400).send({
         message: 'Bad request',
@@ -67,7 +57,7 @@ export default async function handler(
       await batch.commit();
       res.status(200).send({
         message: 'Registration successfull',
-        fullName,
+        fullName: req.body.fullName,
       });
     } catch (err) {
       res.status(500).send({
@@ -93,12 +83,16 @@ export default async function handler(
         console.log('No such document exists');
         return;
       }
-      batch.update(registrationDoc, {
+      const payload: Pick<
+        RegistrationApiPayload,
+        'referral_code' | 'hasPaid' | 'paymentLink' | 'updatedAt'
+      > = {
         referral_code: parsedRC,
         hasPaid: true,
         paymentLink: `https://dashboard.razorpay.com/app/payments/${paymentId}`,
         updatedAt: serverTimestamp(),
-      });
+      };
+      batch.update(registrationDoc, payload);
       const usersQuerySnap = await getDocs(usersQuery);
       usersQuerySnap.forEach(docu => {
         if (docu.data()) {
@@ -117,8 +111,7 @@ export default async function handler(
         fullName: regData.fullName,
         email: regData.email,
       })
-        .then(async res => {
-          console.log(res.data);
+        .then(async () => {
           await setDoc(registrationDoc, { emailSent: true }, { merge: true });
           console.log('Email sent successfully');
         })
@@ -136,7 +129,7 @@ export default async function handler(
     try {
       await batch.commit();
       res.status(200).send({
-        message: 'Registration updated successfull',
+        message: 'Registration updated successfully',
       });
     } catch (err) {
       res.status(500).send({

@@ -20,6 +20,7 @@ import {
   OverallStats,
   User,
 } from 'components/organizer-dashboard';
+import { Routes } from 'components/types';
 
 const Container = styled.div`
   display: flex;
@@ -68,7 +69,7 @@ const Organizer: FC<Props> = ({ users, ticketsSold, yearData }) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (!currentUser) router.push('/auth');
+    if (!currentUser) router.push(Routes.Auth);
   });
 
   if (!currentUser) return null;
@@ -76,7 +77,7 @@ const Organizer: FC<Props> = ({ users, ticketsSold, yearData }) => {
   return (
     <>
       <PageHead
-        title="Event Head | SYCon2k22"
+        title="Organizer's Dashboard | SYCon2k22"
         description="Event Head | SYCon2k22"
       />
       <Container>

@@ -1,6 +1,6 @@
 import { Button, Form } from 'antd';
 import { Input } from 'components/Input';
-import { snuDomain, ssnDomain } from 'utils/util';
+import { snuDomain, ssnDomain } from 'components/registration-form';
 import { Login, loginFieldsLabel } from './constants';
 import { SignIn } from './types';
 import { StyledFormItem as FormItem } from './common';

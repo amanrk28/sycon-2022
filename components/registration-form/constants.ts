@@ -1,42 +1,76 @@
-import { firestore } from 'lib/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
 import content from 'users.json';
-import { ssnDomain, snuDomain } from 'utils/util';
 
 export const rcList = content.users.map(x => ({
   key: x.referral_code,
   label: `${x.fullName} - ${x.referral_code}`,
+  value: x.referral_code,
 }));
 
 export const dropdownRules = [{ required: true }];
 
-export const inputValidator = (field: string) => (_, value: any) => {
-  if (field === 'phone' && !value.match(/^\d{10}$/)) {
-    return Promise.reject(new Error('Enter a valid phone number'));
-  }
-  if (field === 'email') {
-    if (
-      !value.toLowerCase().includes(ssnDomain) &&
-      !value.toLowerCase().includes(snuDomain)
-    )
-      return Promise.reject(new Error('Enter your college email'));
-  }
-  return Promise.resolve();
-};
+const arrFieldMap = (x: string) => ({ key: x, label: x, value: x });
+const inputFields = [
+  { id: 'fullName', label: 'Full Name', type: 'text' },
+  { id: 'email', label: 'College Email ID', type: 'email' },
+  { id: 'registerNumber', label: 'Register Number', type: 'number' },
+  {
+    id: 'phone',
+    label: 'Phone Number',
+    type: 'number',
+    max: 10,
+  },
+];
 
-export async function checkIfUserExists(regNo: string) {
-  try {
-    const q = query(
-      collection(firestore, 'registrations'),
-      where('registerNumber', '==', regNo)
-    );
-    const existingReg = await getDocs(q);
-    if (!existingReg.empty) {
-      return true;
-    }
-    return false;
-  } catch (err) {
-    console.log(err);
-    return;
-  }
+const ssnBranchNames = [
+  'CSE',
+  'IT',
+  'ECE',
+  'EEE',
+  'Mechanical',
+  'BME',
+  'Civil',
+  'Chemical',
+].map(arrFieldMap);
+
+const mastersBranchNames = [
+  'Communication Systems',
+  'Computer Science & Engineering',
+  'Applied Electronics',
+  'Power Electronics & Drives',
+  'VLSI Design',
+  'Energy Engineering',
+  'Manufacturing Engineering',
+  'Medical Electronics',
+  'Information Technology',
+  'Environmental Science & Technology',
+].map(arrFieldMap);
+
+const snuBranchNames = ['IoT', 'AI & DS', 'General/Hons', 'PA'].map(
+  arrFieldMap
+);
+
+export enum MastersDegree {
+  Me = 'M.E',
+  Mtech = 'M.Tech',
 }
+
+const ssnDegreeNames = ['B.Tech', 'B.E.', 'M.E', 'M.Tech'].map(arrFieldMap);
+const snuDegreeNames = ['B.Tech', 'B.Com'].map(arrFieldMap);
+const collegeNames = ['SSN', 'SNU'].map(arrFieldMap);
+const yearList = ['1', '2', '3', '4'].map(arrFieldMap);
+
+export enum College {
+  Ssn = 'SSN',
+  Snu = 'SNU',
+}
+
+export {
+  inputFields,
+  snuBranchNames,
+  snuDegreeNames,
+  ssnBranchNames,
+  ssnDegreeNames,
+  collegeNames,
+  mastersBranchNames,
+  yearList,
+};

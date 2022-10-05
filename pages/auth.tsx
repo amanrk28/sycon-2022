@@ -18,6 +18,7 @@ import {
 } from 'components/auth-form';
 import PageHead from 'components/PageHead';
 import { useAuth } from 'lib/AuthProvider';
+import { ApiRoutes, Routes } from 'components/types';
 
 const Container = styled.div`
   display: flex;
@@ -71,14 +72,14 @@ const Auth: NextPage = () => {
       axios({
         baseURL: window.location.origin,
         method: 'GET',
-        url: `/api/user?uid=${uid}`,
+        url: `${ApiRoutes.User}?uid=${uid}`,
       }).then(res => {
-        setLoading(false);
         if (res.data.isAdmin) {
-          router.push('/organizer');
+          router.push(Routes.Organizer);
         } else {
-          router.push(`/dashboard/${res.data.referral_code}`);
+          router.push(`${Routes.Dashboard}/${res.data.referral_code}`);
         }
+        setLoading(false);
       });
     },
     [router]
@@ -105,7 +106,7 @@ const Auth: NextPage = () => {
     ...rest
   }: Omit<Signup, 'confirmPassword'>) => {
     setLoading(true);
-    const { user } = await signup!(email, password);
+    const { user } = await signup(email, password);
     if (user) {
       const userData = {
         uid: user.uid,
@@ -114,11 +115,11 @@ const Auth: NextPage = () => {
       };
       await sendEmailVerification(user);
       toast.success('Verification email sent!');
-      await addUserDetail!(user, rest.fullName);
+      await addUserDetail(user, rest.fullName);
       axios({
         baseURL: window.location.origin,
         method: 'POST',
-        url: '/api/user',
+        url: ApiRoutes.User,
         data: userData,
       })
         .then(res => {
@@ -136,7 +137,7 @@ const Auth: NextPage = () => {
   const loginUser = async ({ email, password }: SignIn) => {
     try {
       setLoading(true);
-      const { user } = await login!(email, password);
+      const { user } = await login(email, password);
       toast.success('Welcome Back!');
       if (user) {
         redirectUser(user.uid);
