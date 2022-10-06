@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { AuthErrorCodes, sendEmailVerification } from 'firebase/auth';
 import type { NextPage } from 'next';
 import Image from 'next/image';
@@ -16,8 +15,9 @@ import {
   authTypeMessage,
 } from 'components/auth-form';
 import PageHead from 'components/PageHead';
+import { createUser, getUser } from 'components/auth-form/api';
+import { Routes } from 'components/types';
 import { useAuth } from 'lib/AuthProvider';
-import { ApiRoutes, Routes } from 'components/types';
 
 const Container = styled.div`
   display: flex;
@@ -68,11 +68,7 @@ const Auth: NextPage = () => {
   const redirectUser = useCallback(
     (uid: string) => {
       setLoading(true);
-      axios({
-        baseURL: window.location.origin,
-        method: 'GET',
-        url: `${ApiRoutes.User}?uid=${uid}`,
-      }).then(res => {
+      getUser(uid).then(res => {
         if (res.data.isAdmin) {
           router.push(Routes.Organizer);
         } else {
@@ -121,12 +117,7 @@ const Auth: NextPage = () => {
       await addUserDetail(user, rest.fullName);
       toast.dismiss();
       toast.promise(
-        axios({
-          baseURL: window.location.origin,
-          method: 'POST',
-          url: ApiRoutes.User,
-          data: userData,
-        }),
+        createUser(userData),
         {
           loading: 'Loading...',
           success: res => {

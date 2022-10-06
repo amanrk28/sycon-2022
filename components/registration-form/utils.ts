@@ -22,12 +22,14 @@ export const snuDomain = 'snuchennai.edu.in';
 export const sanitizeData = (data: PayloadData) => {
   // Format Full Name
   if (data.fullName) {
-    let x = data.fullName.split(' ');
-    x = x.map((item: string) => item[0].toUpperCase() + item.substr(1));
-    data.fullName = x.join(' ');
+    data.fullName = data.fullName
+      .split(' ')
+      .map((x: string) => x.charAt(0).toUpperCase() + x.slice(1).toLowerCase())
+      .join(' ');
   }
   // Format email
   if (data.email) data.email = data.email.trim();
+
   return { data };
 };
 
@@ -35,22 +37,27 @@ export const generate4DigitNumber = () => {
   return Math.floor(Math.random() * 10000) + 1;
 };
 
-export async function checkIfUserExists(regNo: string) {
+export const checkIfUserExists = async (
+  regNo: string
+): Promise<{ isUser: boolean; userData: any | null }> => {
   try {
     const q = query(
       collection(firestore, 'registrations'),
       where('registerNumber', '==', regNo)
     );
     const existingReg = await getDocs(q);
-    if (!existingReg.empty) {
-      return true;
+    if (existingReg.empty) {
+      return { isUser: false, userData: null };
     }
-    return false;
+    return {
+      isUser: true,
+      userData: existingReg.docs[0].data(),
+    };
   } catch (err) {
     console.log(err);
-    return;
+    return { isUser: false, userData: null };
   }
-}
+};
 
 export const generateUsername = (name: string) =>
   name.substring(0, 15).toLowerCase().replace(/\s/g, '_') +

@@ -1,9 +1,3 @@
-export interface RazorpaySuccesshandlerArgs {
-  razorpay_signature: string;
-  razorpay_order_id: string;
-  razorpay_payment_id: string;
-}
-
 export interface PayloadData {
   fullName: string;
   email: string;
