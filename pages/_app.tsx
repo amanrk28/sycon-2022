@@ -17,6 +17,8 @@ function SyconApp({ Component, pageProps }: AppProps) {
           style: {
             background: '#333333',
             color: '#FFFFFF',
+            fontSize: 16,
+            fontWeight: 500,
           },
         }}
       />

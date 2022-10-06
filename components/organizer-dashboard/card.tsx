@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { Title } from 'components/title';
 import { Space, Typography } from 'antd';
 import { ColorBox } from 'components/doughnut-chart';
+import { User } from './types';
 
 ChartJS.register(ArcElement, Tooltip);
 
@@ -37,33 +38,35 @@ const Legend = styled.div`
   top: 100px;
 `;
 
-export const Card = ({ data }: { data: any }) => {
+const capitalize = (name: string) =>
+  name
+    .split(' ')
+    .map(x => x.charAt(0).toUpperCase() + x.slice(1).toLowerCase())
+    .join(' ');
+
+export const Card = ({ user }: { user: User }) => {
   const pieData: ChartData<'pie'> = useMemo(() => {
     return {
       labels: ['Cash', 'Online', 'None'],
       datasets: [
         {
           label: 'firstDataset',
-          data: [data.cash, data.online, 0.0001],
+          data: [user.cash, user.online, 0.0001],
           backgroundColor: [
             'rgba(0, 192, 255, 1)',
             'rgba(255, 216, 0, 1)',
             '#ccc',
           ],
-          borderColor: [
-            'rgba(0, 192, 255, 1)',
-            'rgba(255, 216, 0, 1)',
-            'rgba(255, 216, 0, 1)',
-          ],
+          borderColor: ['rgba(0, 192, 255, 1)', 'rgba(255, 216, 0, 1)', '#ccc'],
           borderWidth: 1,
         },
       ],
     };
-  }, [data.cash, data.online]);
+  }, [user.cash, user.online]);
 
   return (
     <Container>
-      <Title level={4}>{data.name || ''}</Title>
+      <Title level={4}>{capitalize(user.name) || ''}</Title>
       <PieChart>
         <Pie data={pieData} options={{ radius: 80 }} />
       </PieChart>
@@ -74,8 +77,8 @@ export const Card = ({ data }: { data: any }) => {
               <ColorBox style={{ backgroundColor: item.color }} />
               <Typography.Text>{item.title}</Typography.Text>
             </Space>
-            <Typography.Text style={{ marginLeft: 26 }}>
-              {item.id === 'cash' ? data.cash : data.online}
+            <Typography.Text style={{ marginLeft: 32, fontWeight: 500 }}>
+              {item.id === 'cash' ? user.cash : user.online}
             </Typography.Text>
           </Fragment>
         ))}

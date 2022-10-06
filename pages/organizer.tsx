@@ -10,7 +10,7 @@ import {
   CategoryScale,
   BarElement,
 } from 'chart.js';
-import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { firestore } from 'lib/firebase';
 import styled from 'styled-components';
 import { GetServerSideProps } from 'next';
@@ -100,7 +100,7 @@ const Organizer: FC<Props> = ({ users, ticketsSold, yearData }) => {
 
 export const getServerSideProps: GetServerSideProps = async () => {
   const usersQuerySnapshot = await getDocs(
-    query(collection(firestore, 'users'), orderBy('registrations', 'desc'))
+    query(collection(firestore, 'users'), where('isAdmin', '==', false))
   );
   let users = [];
   let ticketsSold = 0;

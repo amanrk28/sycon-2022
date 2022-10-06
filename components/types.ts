@@ -40,7 +40,8 @@ export interface UserApiPayload {
   email: string;
   fullName: string;
   phone: string;
-  referral_code: number;
-  registrations: number;
+  referral_code: number | null;
+  registrations: number | null;
   year: number;
+  isAdmin: boolean;
 }

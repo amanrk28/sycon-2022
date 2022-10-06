@@ -1,11 +1,7 @@
 import { Button, Form } from 'antd';
+import { Fragment } from 'react';
+import { Dropdown } from 'components/dropdown';
 import { Input } from 'components/Input';
-import { SignUpField, signupFields } from './constants';
-import { Signup } from './types';
-import {
-  StyledFormItem as FormItem,
-  StyledFormItem1 as InputContainer,
-} from './common';
 import {
   mastersBranchNames,
   snuBranchNames,
@@ -14,7 +10,12 @@ import {
   dropdownRules,
   inputValidator,
 } from 'components/registration-form';
-import { Dropdown } from 'components/dropdown';
+import {
+  StyledFormItem as FormItem,
+  StyledFormItem1 as InputContainer,
+} from './common';
+import { SignUpField, signupFields } from './constants';
+import { Signup } from './types';
 
 export const SignupForm = ({
   onSubmit,
@@ -31,10 +32,9 @@ export const SignupForm = ({
       }}
     >
       {signupFields.map(field => (
-        <>
+        <Fragment key={field.id}>
           {field.id === SignUpField.ConfirmPassword ? (
             <FormItem
-              key={field.id}
               name={field.id}
               label={field.label}
               dependencies={[SignUpField.Password]}
@@ -63,7 +63,6 @@ export const SignupForm = ({
             </FormItem>
           ) : (
             <FormItem
-              key={field.id}
               name={field.id}
               label={field.label}
               rules={[
@@ -86,7 +85,7 @@ export const SignupForm = ({
               )}
             </FormItem>
           )}
-        </>
+        </Fragment>
       ))}
       <InputContainer
         name={SignUpField.Year}

@@ -1,3 +1,5 @@
+import { AuthErrorCodes } from 'firebase/auth';
+
 export interface Signup {
   email: string;
   password: string;
@@ -23,15 +25,10 @@ export const authTypeMessage = {
   [AuthType.Signup]: 'Already have an account?',
 };
 
-export enum ErrorCode {
-  UserNotFound = 'auth/user-not-found',
-  WrongPassword = 'auth/wrong-password',
-  UnknownError = 'unknown',
-}
-
 export const errorMessage = {
-  [ErrorCode.UserNotFound]: 'Email not found! Did you mean to sign up?',
-  [ErrorCode.WrongPassword]:
+  [AuthErrorCodes.USER_DELETED]: 'Email not found! Did you mean to sign up?',
+  [AuthErrorCodes.INVALID_PASSWORD]:
     'The password entered was incorrect or you have not verified your email yet.',
-  [ErrorCode.UnknownError]: 'An unexpected error has occurred. ☠️',
+  [AuthErrorCodes.EMAIL_EXISTS]: 'Email already exists!!',
+  unknown: 'An unexpected error has occurred. ☠️',
 };

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { sendEmailVerification } from 'firebase/auth';
+import { AuthErrorCodes, sendEmailVerification } from 'firebase/auth';
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -11,7 +11,6 @@ import {
   SignupForm,
   SignIn,
   AuthType,
-  ErrorCode,
   errorMessage,
   Signup,
   authTypeMessage,
@@ -91,14 +90,14 @@ const Auth: NextPage = () => {
     }
   }, [redirectUser, currentUser]);
 
-  const toggleAuth = () => {
+  const toggleAuth = useCallback(() => {
     setAuthType(prevState => {
       if (prevState === AuthType.Signup) {
         return AuthType.Signin;
       }
       return AuthType.Signup;
     });
-  };
+  }, []);
 
   const signupUser = async ({
     email,
@@ -106,31 +105,48 @@ const Auth: NextPage = () => {
     ...rest
   }: Omit<Signup, 'confirmPassword'>) => {
     setLoading(true);
-    const { user } = await signup(email, password);
-    if (user) {
+    try {
+      const { user } = await signup(email, password);
+      if (!user) return;
       const userData = {
         uid: user.uid,
         email,
         ...rest,
       };
-      await sendEmailVerification(user);
-      toast.success('Verification email sent!');
+      toast.promise(sendEmailVerification(user), {
+        loading: 'Sending verification email...',
+        success: 'Verification mail sent!',
+        error: 'Error sending verification email',
+      });
       await addUserDetail(user, rest.fullName);
-      axios({
-        baseURL: window.location.origin,
-        method: 'POST',
-        url: ApiRoutes.User,
-        data: userData,
-      })
-        .then(res => {
-          toast.success(
-            `Sign up successful! Your Referral Code is ${res.data.referralCode}`
-          );
-          redirectUser(user.uid);
-        })
-        .catch(() => {
-          toast.error('Unable to post data');
-        });
+      toast.dismiss();
+      toast.promise(
+        axios({
+          baseURL: window.location.origin,
+          method: 'POST',
+          url: ApiRoutes.User,
+          data: userData,
+        }),
+        {
+          loading: 'Loading...',
+          success: res => {
+            redirectUser(user.uid);
+            return res.data.isAdmin
+              ? `Signed up successfully. Preparing your dashboard...`
+              : `Signed up successfully. Your referral code is ${res.data.referralCode}`;
+          },
+          error: 'Unable to create user',
+        },
+        { duration: 10000 }
+      );
+    } catch (err: any) {
+      setLoading(false);
+      switch (err.code) {
+        case AuthErrorCodes.EMAIL_EXISTS:
+          return toast.error(errorMessage[AuthErrorCodes.EMAIL_EXISTS]);
+        default:
+          return toast.error(errorMessage.unknown);
+      }
     }
   };
 
@@ -145,12 +161,12 @@ const Auth: NextPage = () => {
     } catch (err: any) {
       setLoading(false);
       switch (err.code) {
-        case ErrorCode.UserNotFound:
-          toast.error(errorMessage[ErrorCode.UserNotFound]);
-        case ErrorCode.WrongPassword:
-          toast.error(errorMessage[ErrorCode.WrongPassword]);
+        case AuthErrorCodes.USER_DELETED:
+          return toast.error(errorMessage[AuthErrorCodes.USER_DELETED]);
+        case AuthErrorCodes.INVALID_PASSWORD:
+          return toast.error(errorMessage[AuthErrorCodes.INVALID_PASSWORD]);
         default:
-          toast.error(errorMessage[ErrorCode.UnknownError]);
+          return toast.error(errorMessage.unknown);
       }
     }
   };
