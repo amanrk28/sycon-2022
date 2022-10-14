@@ -246,8 +246,8 @@ export const RegistrationForm: FC = () => {
             options={
               form.getFieldValue(Fields.College) === College.Ssn
                 ? Object.values(MastersDegree).includes(
-                  form.getFieldValue(Fields.Degree) as any
-                )
+                    form.getFieldValue(Fields.Degree) as any
+                  )
                   ? mastersBranchNames
                   : ssnBranchNames
                 : snuBranchNames

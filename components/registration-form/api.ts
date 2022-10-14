@@ -1,4 +1,4 @@
-import { PayloadData, RazorpaySuccesshandlerArgs } from './types';
+import { PayloadData } from './types';
 import axios from 'axios';
 import { ApiRoutes } from 'components/types';
 
