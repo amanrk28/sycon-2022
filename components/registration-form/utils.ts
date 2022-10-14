@@ -38,12 +38,14 @@ export const generate4DigitNumber = () => {
 };
 
 export const checkIfUserExists = async (
-  regNo: string
+  regNo: string,
+  email: string
 ): Promise<{ isUser: boolean; userData: any | null }> => {
   try {
     const q = query(
       collection(firestore, 'registrations'),
-      where('registerNumber', '==', regNo)
+      where('registerNumber', '==', regNo),
+      where('email', '==', email)
     );
     const existingReg = await getDocs(q);
     if (existingReg.empty) {
