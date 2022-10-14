@@ -144,11 +144,24 @@ export const RegistrationForm: FC = () => {
         throw new Error('Year must 1 or 2 for Masters Degree');
       }
       setPayloadData(data);
-      const username = generateUsername(data.fullName);
-      const { isUser, userData } = await checkIfUserExists(data.registerNumber);
+      const { fullName, email, registerNumber } = data;
+      const username = generateUsername(fullName);
+      const { isUser, userData } = await checkIfUserExists(
+        registerNumber,
+        email
+      );
       if (isUser && userData) {
-        displayRazorPay({ ...userData, referralCode: userData.referral_code });
-        throw new Error('Registration already done. Redirecting to payment...');
+        if (userData.hasPaid) {
+          throw new Error('Registration already done!');
+        } else {
+          displayRazorPay({
+            ...userData,
+            referralCode: userData.referral_code,
+          });
+          throw new Error(
+            'Registration already done. Redirecting to payment...'
+          );
+        }
       }
       setSs(ssKeys.firebaseRegUserRef, username);
       await createRegistration({ ...data, username });
@@ -170,7 +183,7 @@ export const RegistrationForm: FC = () => {
         toast.promise(onSubmit(values), {
           loading: 'Loading...',
           success: 'Registration Successful 🎉',
-          error: err => err.toString(),
+          error: err => err.toString().replace('Error:', ''),
         });
       }}
     >
