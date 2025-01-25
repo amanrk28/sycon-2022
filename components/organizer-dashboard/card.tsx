@@ -1,6 +1,6 @@
 import { Fragment, useMemo } from 'react';
 import { Chart as ChartJS, ArcElement, Tooltip, ChartData } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+import { Doughnut } from 'react-chartjs-2';
 import styled from 'styled-components';
 import { Title } from 'components/title';
 import { Space, Typography } from 'antd';
@@ -45,7 +45,7 @@ const capitalize = (name: string) =>
     .join(' ');
 
 export const Card = ({ user }: { user: User }) => {
-  const pieData: ChartData<'pie'> = useMemo(() => {
+  const pieData: ChartData<'doughnut'> = useMemo(() => {
     return {
       labels: ['Cash', 'Online', 'None'],
       datasets: [
@@ -68,7 +68,7 @@ export const Card = ({ user }: { user: User }) => {
     <Container>
       <Title level={4}>{capitalize(user.name) || ''}</Title>
       <PieChart>
-        <Pie data={pieData} options={{ radius: 80 }} />
+        <Doughnut data={pieData} options={{ radius: 80 }} />
       </PieChart>
       <Legend>
         {legend.map(item => (
@@ -78,7 +78,7 @@ export const Card = ({ user }: { user: User }) => {
               <Typography.Text>{item.title}</Typography.Text>
             </Space>
             <Typography.Text style={{ marginLeft: 32, fontWeight: 500 }}>
-              {item.id === 'cash' ? user.cash : user.online}
+              &#8377;{item.id === 'cash' ? user.cash : user.online}
             </Typography.Text>
           </Fragment>
         ))}

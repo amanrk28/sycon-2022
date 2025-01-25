@@ -5,13 +5,13 @@ import { Body, ColorBox, Container, Doughnuts, Inner, Outer } from './styles';
 
 const legend = [
   { title: 'Tickets Sold', id: 'ticketsSold', color: '#00C0FF' },
-  { title: 'Money Collected', id: 'moneyCollected', color: '#FFD800' },
+  { title: 'Amount Collected', id: 'moneyCollected', color: '#FFD800' },
 ];
 
 export const DoughnutChart = ({ ticketsSold }: { ticketsSold: number }) => {
   return (
     <Container>
-      <Title level={3}>Tickets & Money</Title>
+      <Title level={3}>Ticket Sales</Title>
       <Body>
         <Doughnuts>
           <Outer>
@@ -28,6 +28,7 @@ export const DoughnutChart = ({ ticketsSold }: { ticketsSold: number }) => {
                 <ColorBox style={{ backgroundColor: item.color }} />
                 <Typography.Text>
                   {item.title} -{' '}
+                  {item.id === 'moneyCollected' ? <>&#8377;</> : ''}
                   {item.id === 'ticketsSold' ? ticketsSold : ticketsSold * 200}
                 </Typography.Text>
               </Space>

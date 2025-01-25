@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Card as AntCard, Input, Space } from 'antd';
 import { Title } from 'components/title';
 import { User } from './types';
-import { stringSorting } from 'components/dashboard';
 
 const Container = styled.div`
   display: flex;
@@ -80,7 +79,13 @@ export const IndividualStats = ({ users }: { users: User[] }) => {
       >
         <StatsGrid>
           {filteredUsers
-            ?.sort((a, b) => stringSorting(a.name, b.name))
+            ?.sort(
+              (a, b) =>
+                (b.cash ?? 0) +
+                (b.online ?? 0) -
+                (a.cash ?? 0) -
+                (a.online ?? 0)
+            )
             ?.map(user => (
               <Card key={user.name} user={user} />
             ))}
